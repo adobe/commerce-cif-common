@@ -1,0 +1,40 @@
+{
+  "name": "@adobe/commerce-cif-web-action-transformer",
+  "version": "0.1.17",
+  
+  "description": "Adobe Commerce Integration Framework (CIF) Web Action Transformer Project",
+  "main": "index.js",
+  "author": "Adobe Systems Inc.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/commerce-cif-common.git"
+  },
+  "dependencies": {
+    "@adobe/commerce-cif-common": "0.1.14",
+    "@adobe/commerce-cif-model": "0.1.118",
+    "http-status-codes": "1.1.6"
+  },
+  "devDependencies": {
+    "eslint": "3.19.0",
+    "eslint-plugin-header": "1.2.0",
+    "release-it": "2.8.0",
+    "serverless": "1.26.0",
+    "serverless-openwhisk": "0.10.1",
+    "serverless-webpack": "4.3.0",
+    "webpack": "4.0.1"
+  },
+  "eslintConfig": {
+    "extends": "../../.eslintrc.js"
+  },
+  "scripts": {
+    "lint": "$(npm bin)/eslint -f table --ignore-path ../../.eslintignore .",
+    "package": "$(npm bin)/serverless package",
+    "deploy": "$(npm bin)/serverless deploy",
+    "remove": "$(npm bin)/serverless remove",
+    "create-package": "wsk -i package create web-action-transformer@$npm_package_version --shared yes; wsk -i package create web-action-transformer@latest --shared yes",
+    "delete-package": "wsk -i package delete web-action-transformer@$npm_package_version; wsk -i package delete web-action-transformer@latest",
+    "deploy-package": "npm run create-package; npm run deploy; npm run deploy -- --ow-package web-action-transformer@latest",
+    "remove-package": "npm run remove; npm run remove -- --ow-package web-action-transformer@latest; npm run delete-package"
+  }
+}

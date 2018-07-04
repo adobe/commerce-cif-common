@@ -1,0 +1,48 @@
+{
+    "name": "@adobe/commerce-cif-common-umbrella",
+    "version": "0.1.0",
+    "description": "Adobe Commerce Integration Framework (CIF) Common Umbrella Project",
+    "author": "Adobe Systems Inc.",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/adobe/commerce-cif-common.git"
+    },
+    "engines": {
+        "node": ">= 0.8.0"
+    },
+    "devDependencies": {
+        "lerna": "^2.0.0-rc.5",
+        "mocha": "3.4.2",
+        "mocha-jenkins-reporter": "0.3.7",
+        "xunit-file": "1.0.0",
+        "nyc": "11.1.0",
+        "chai": "4.0.2",
+        "sinon": "5.0.10",
+        "mock-require": "2.0.2"
+    },
+    "nyc": {
+        "include": [
+            "src/web-action-transformer",
+            "src/shared"
+        ],
+        "exclude": [
+            "src/web-action-transformer/webpack.config.js"
+        ],
+        "check-coverage": true,
+        "per-file": false,
+        "lines": 19,
+        "all": true
+    },
+    "scripts": {
+        "postinstall": "$(npm bin)/lerna bootstrap",
+        "globalinstall": "npm install -g lerna@2.0.0-rc.5",
+        "generate-cov-html": "$(npm bin)/nyc report --reporter=html",
+        "unit": "$(npm bin)/mocha test/**/*test.js",
+        "test-cov": "XUNIT_FILE=test-results-xunit.xml $(npm bin)/nyc $(npm bin)/mocha test/**/*test.js -R xunit-file && $(npm bin)/nyc report --reporter=lcov",
+        "test": "$(npm bin)/lerna run lint && npm run test-cov && npm run generate-cov-html",
+        "test-it": "XUNIT_FILE=test-results-it-xunit.xml $(npm bin)/mocha test/**/*it.js -R xunit-file",
+        "deploy": "$(npm bin)/lerna run deploy-package",
+        "remove": "$(npm bin)/lerna run remove-package"
+    }
+}

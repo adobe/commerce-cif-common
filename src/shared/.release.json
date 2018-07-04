@@ -1,0 +1,41 @@
+{
+    "non-interactive": false,
+    "dry-run": false,
+    "verbose": false,
+    "force": false,
+    "pkgFiles": [
+        "package.json"
+    ],
+    "increment": "patch",
+    "prereleaseId": null,
+    "buildCommand": false,
+    "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
+    "requireCleanWorkingDir": false,
+    "src": {
+        "commitMessage": "@releng Release: @adobe/commerce-cif-common-%s",
+        "tagName": "@adobe/commerce-cif-common-%s",
+        "tagAnnotation": "Release: @adobe/commerce-cif-common-%s",
+        "pushRepo": null,
+        "beforeStartCommand": "npm test",
+        "beforeStageCommand": false,
+        "afterReleaseCommand": false,
+        "githubAssets": false
+    },
+    "npm": {
+        "publish": true,
+        "publishPath": ".",
+        "tag": "latest",
+        "private": false,
+        "forcePublishSourceRepo": false
+    },
+    "prompt": {
+        "src": {
+            "status": false,
+            "commit": true,
+            "tag": true,
+            "push": true,
+            "release": true,
+            "publish": true
+        }
+    }
+}

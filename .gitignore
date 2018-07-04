@@ -1,0 +1,16 @@
+node_modules
+dist
+.idea
+.project
+.settings
+*-debug.log
+.serverless
+test-results*.xml
+*.iml
+service.yml
+dev-development/service.yml
+coverage
+.nyc_output
+.vscode
+.scannerwork
+/bin/
