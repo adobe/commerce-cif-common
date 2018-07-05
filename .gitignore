@@ -5,7 +5,6 @@ dist
 .settings
 *-debug.log
 .serverless
-test-results*.xml
 *.iml
 service.yml
 dev-development/service.yml
@@ -14,3 +13,4 @@ coverage
 .vscode
 .scannerwork
 /bin/
+test/results
