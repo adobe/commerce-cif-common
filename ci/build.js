@@ -30,4 +30,26 @@ if ("test" in pkg.scripts) {
     ci.sh('npm test');
 }
 
+if ("test-it" in pkg.scripts) {
+    ci.stage('INTEGRATION TESTS');
+    ci.sh('mkdir -p test/results/integration');
+
+    let branch = process.env.CIRCLE_BRANCH.replace(/[\W_]+/g, "");
+    let buildNum = process.env.CIRCLE_BUILD_NUM.replace(/[\W_]+/g, "");
+    process.env.OW_PACKAGE_SUFFIX = `common-${branch}-${buildNum}`;
+
+    try {
+        ci.withWskCredentials(process.env.WSK_API_HOST, process.env.CORE_WSK_NAMESPACE, process.env.CORE_WSK_AUTH_STRING, () => {
+            ci.sh('$(npm bin)/lerna run deploy-suffix --concurrency 1');
+        });
+
+        ci.sh('npm run test-it');
+
+    } finally {
+        ci.withWskCredentials(process.env.WSK_API_HOST, process.env.CORE_WSK_NAMESPACE, process.env.CORE_WSK_AUTH_STRING, () => {
+            ci.sh('$(npm bin)/lerna run remove-suffix --concurrency 1');
+        });
+    }
+}
+
 ci.stage('BUILD DONE');
