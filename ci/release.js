@@ -50,8 +50,11 @@ ci.stage('PERFORM RELEASE');
 try {
     ci.gitImpersonate('CircleCi', 'noreply@circleci.com', () => {
         ci.dir(releaseableModules[moduleToRelease], () => {
-            // Increase version
-            let newVersion = ci.sh(`npm version ${bump}`);
+            // Log in to npm
+            this.sh('echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc');
+
+            // Increase version, remove the v prefix
+            let newVersion = ci.sh(`npm version ${bump}`).toString().trim().substr(1);
 
             // Stage package.json
             ci.sh('git add package.json');
@@ -71,6 +74,9 @@ try {
         });
     });
 } finally {
+    // Log out from npm
+    ci.sh('rm -f ~/.npmrc');
+
     // Remove release tag
     ci.sh(`git push --delete origin ${gitTag}`);
 }
