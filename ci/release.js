@@ -14,45 +14,65 @@
 
 'use strict';
 
-const e = require('child_process');
 const CI = require('./ci.js');
 const ci = new CI();
 
-ci.context();
-let gitRemote = "";
-
-if (!process.env.RELEASE_MODULES) {
-    throw new Error("Missing RELEASE_MODULES environment variable");
+// Modules in this repository
+const releaseableModules = {
+    'commerce-cif-common': 'src/shared',
+    'commerce-cif-web-action-transformer': 'src/web-action-transformer'
 }
-const releasePackages = JSON.parse(process.env.RELEASE_MODULES);
+
+ci.context();
+
+// Check for tag
+let gitTag = process.env.CIRCLE_TAG;
+if (!gitTag) {
+    return;
+}
+
+// Find module that should be release
+let moduleToRelease = ci.parseReleaseModule(gitTag, releaseableModules);
+if (!moduleToRelease) {
+    throw new Error('Invalid release tag.');
+}
+
+// Parse version bump term
+let bump = ci.parseVersionBump(gitTag);
+if (!bump) {
+    throw new Error('Invalid release bump term.');
+}
 
 ci.stage('RELEASE PROVISION');
-// Setup git repository for push access
-gitRemote = e.execSync("git config --get remote.origin.url").toString();
-if (!gitRemote.startsWith("https://")) {
-    throw new Error("Git checkout via HTTPS is required.");
-}
-
-// Add credentials to git remote
-gitRemote = "https://" + process.env.GIT_USERNAME + ":" + process.env.GIT_PASSWORD + "@" + gitRemote.slice("https://".length);
-
-// Provision
 ci.sh('npm install');
 
 ci.stage('PERFORM RELEASE');
-ci.gitCredentials(gitRemote, () => {
-    ci.gitImpersonate(process.env.RELEASE_USER, process.env.RELEASE_USER, () => {
-        for (let pkg of Object.keys(releasePackages)) {
-            // Skip packages that should not be released
-            if (!['patch', 'minor', 'major'].includes(releasePackages[pkg])) {
-                continue;
-            }
+try {
+    ci.gitImpersonate('CircleCi', 'noreply@circleci.com', () => {
+        ci.dir(releaseableModules[moduleToRelease], () => {
+            // Increase version
+            let newVersion = ci.sh(`npm version ${bump}`);
 
-            // Release
-            ci.dir(pkg, () => {
-                console.log('Perform release for module in ' + pkg + ' as ' + releasePackages[pkg] + ' update.');
-                ci.sh('\$(npm bin)/release-it --increment ' + releasePackages[pkg] + ' --non-interactive --src.beforeStartCommand=\"\"');
-            });
-        }
+            // Stage package.json
+            ci.sh('git add package.json');
+            ci.sh('git status');
+
+            // Commit changes
+            ch.sh(`git commit -m "@releng Release: @adobe/${moduleToRelease}-${newVersion}"`);
+
+            // Add tag
+            ci.sh(`git tag @adobe/${moduleToRelease}-${newVersion}`);
+
+            // Publish to npm
+            ci.sh('npm publish --access public');
+
+            // Push changes to git
+            ci.sh('git push --follow-tags');
+        });
     });
-});
+} finally {
+    // Remove release tag
+    ci.sh(`git push --delete origin ${gitTag}`);
+}
+
+ci.stage('RELEASE DONE');
