@@ -14,9 +14,6 @@
 
 'use strict';
 
-const e = require('child_process');
-const fs = require('fs');
-
 const CI = require('./ci.js');
 const ci = new CI();
 
@@ -29,41 +26,28 @@ ci.sh('npm install');
 
 if ("test" in pkg.scripts) {
     ci.stage('UNIT TESTS');
+    ci.sh('mkdir -p test/results/unit');
     ci.sh('npm test');
 }
 
 if ("test-it" in pkg.scripts) {
     ci.stage('INTEGRATION TESTS');
+    ci.sh('mkdir -p test/results/integration');
+
+    let branch = process.env.CIRCLE_BRANCH.replace(/[\W_]+/g, "");
+    let buildNum = process.env.CIRCLE_BUILD_NUM.replace(/[\W_]+/g, "");
+    process.env.OW_PACKAGE_SUFFIX = `common-${branch}-${buildNum}`;
+
     try {
         ci.withWskCredentials(process.env.WSK_API_HOST, process.env.CORE_WSK_NAMESPACE, process.env.CORE_WSK_AUTH_STRING, () => {
-            ci.sh('$(npm bin)/lerna run deploy-package --concurrency 1');
+            ci.sh('$(npm bin)/lerna run deploy-suffix --concurrency 1');
         });
 
-        if (process.env.DEPLOY_CUSTOMER != 'false') {
-            ci.dir('customer-deployment', () => {
-                ci.withWskCredentials(process.env.WSK_API_HOST, process.env.CUSTOMER_WSK_NAMESPACE, process.env.CUSTOMER_WSK_AUTH_STRING, () => {
-                    ci.withCredentials(process.env.BACKEND_CREDENTIALS, () => {
-                        ci.sh('npm install');
-                        let params = '--customer-namespace ' + process.env.CUSTOMER_WSK_NAMESPACE + ' --bindings-namespace ' + process.env.CORE_WSK_NAMESPACE;
-                        ci.sh('$(npm bin)/serverless deploy ' + params);
-                    });
-                });
-            });
-        }
         ci.sh('npm run test-it');
 
     } finally {
-        if (process.env.DEPLOY_CUSTOMER != 'false') {
-            ci.dir('customer-deployment', () => {
-                ci.withWskCredentials(process.env.WSK_API_HOST, process.env.CUSTOMER_WSK_NAMESPACE, process.env.CUSTOMER_WSK_AUTH_STRING, () => {
-                    let params = '--customer-namespace ' + process.env.CUSTOMER_WSK_NAMESPACE + ' --bindings-namespace ' + process.env.CORE_WSK_NAMESPACE;
-                    ci.sh('$(npm bin)/serverless remove ' + params);
-                });
-            });
-        }
-
         ci.withWskCredentials(process.env.WSK_API_HOST, process.env.CORE_WSK_NAMESPACE, process.env.CORE_WSK_AUTH_STRING, () => {
-            ci.sh('$(npm bin)/lerna run remove-package --concurrency 1');
+            ci.sh('$(npm bin)/lerna run remove-suffix --concurrency 1');
         });
     }
 }

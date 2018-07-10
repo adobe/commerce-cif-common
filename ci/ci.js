@@ -70,7 +70,8 @@ module.exports = class CI {
      */
     withWskCredentials(host, namespace, auth, func) {
         try {
-            this.sh('wsk -i property set --auth ' + auth + ' --apihost ' + host + ' --namespace ' + namespace);
+            console.log(`wsk -i property set --auth XXX --apihost ${host} --namespace ${namespace}`);
+            e.execSync(`wsk -i property set --auth ${auth} --apihost ${host} --namespace ${namespace}`, {stdio: 'inherit'});
             func();
         } finally {
             this.sh('rm -f ~/.wskprops');
@@ -128,6 +129,33 @@ module.exports = class CI {
             fs.unlinkSync('.git-credentials');
             console.log('// Deleted file .git-credentials.');
         }
+    };
+
+    /**
+     * Parse the version bump from a release tag.
+     */
+    parseVersionBump(tag) {
+        if (tag.endsWith('-patch')) {
+            return 'patch';
+        } else if (tag.endsWith('-minor')) {
+            return 'minor';
+        } else if (tag.endsWith('-major')) {
+            return 'major';
+        }
+        return null;
+    };
+
+    /**
+     * Determine the module to be released from a release tag and a given object
+     * with module to path mappings.
+     */
+    parseReleaseModule(tag, mappings) {
+        Object.keys(mappings).forEach((key) => {
+            if (tag.startsWith(`@${key}@`)) {
+                return key;
+            }
+        });
+        return null;
     };
 
 };

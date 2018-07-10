@@ -25,7 +25,11 @@ module.exports.setup = function () {
     env.api_key = process.env.CORE_WSK_AUTH_STRING;
     env.ignore_certs = true;
 
-    env.actionPrefix = `/${env.namespace}/web-action-transformer@latest`;
+    let mainPackage = 'web-action-transformer@latest';
+    if (process.env.OW_PACKAGE_SUFFIX) {
+        mainPackage = `web-action-transformer@${process.env.OW_PACKAGE_SUFFIX}`
+    }
+    env.actionPrefix = `/${env.namespace}/${mainPackage}`;
     env.blocking = true;
     env.result = true;
 

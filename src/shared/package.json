@@ -1,6 +1,6 @@
 {
   "name": "@adobe/commerce-cif-common",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Adobe Commerce Integration Framework (CIF) Common Project",
   "main": "index.js",
   "author": "Adobe Systems Inc.",
@@ -14,8 +14,7 @@
   },
   "devDependencies": {
     "eslint": "3.19.0",
-    "eslint-plugin-header": "1.2.0",
-    "release-it": "2.8.0"
+    "eslint-plugin-header": "1.2.0"
   },
   "eslintConfig": {
     "extends": "../../.eslintrc.js"
