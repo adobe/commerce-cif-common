@@ -71,7 +71,7 @@ try {
 
             // Push changes to git
             ci.sh('git push');
-            ci.sh(`git push @adobe/${moduleToRelease}-${newVersion}`);
+            ci.sh(`git push origin @adobe/${moduleToRelease}-${newVersion}`);
         });
     });
 } finally {
