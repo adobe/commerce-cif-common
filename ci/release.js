@@ -54,7 +54,7 @@ try {
             this.sh('echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc');
 
             // Increase version, remove the v prefix
-            let newVersion = ci.sh(`npm version ${bump}`).toString().trim().substr(1);
+            let newVersion = ci.sh(`npm --no-git-tag-version version ${bump}`).toString().trim().substr(1);
 
             // Stage package.json
             ci.sh('git add package.json');
@@ -64,13 +64,14 @@ try {
             ch.sh(`git commit -m "@releng Release: @adobe/${moduleToRelease}-${newVersion}"`);
 
             // Add tag
-            ci.sh(`git tag @adobe/${moduleToRelease}-${newVersion}`);
+            ci.sh(`git tag -a @adobe/${moduleToRelease}-${newVersion} -m "@adobe/${moduleToRelease}-${newVersion}"`);
 
             // Publish to npm
             ci.sh('npm publish --access public');
 
             // Push changes to git
-            ci.sh('git push --follow-tags');
+            ci.sh('git push');
+            ci.sh(`git push @adobe/${moduleToRelease}-${newVersion}`);
         });
     });
 } finally {
