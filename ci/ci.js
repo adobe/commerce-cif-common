@@ -70,7 +70,8 @@ module.exports = class CI {
      */
     withWskCredentials(host, namespace, auth, func) {
         try {
-            this.sh('wsk -i property set --auth ' + auth + ' --apihost ' + host + ' --namespace ' + namespace);
+            console.log(`wsk -i property set --auth XXX --apihost ${host} --namespace ${namespace}`);
+            e.execSync(`wsk -i property set --auth ${auth} --apihost ${host} --namespace ${namespace}`, {stdio: 'inherit'});
             func();
         } finally {
             this.sh('rm -f ~/.wskprops');
