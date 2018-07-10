@@ -2,5 +2,4 @@
 coverage/*
 test/*
 test-results-xunit.xml
-.release.json
 .npmignore
