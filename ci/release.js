@@ -47,7 +47,7 @@ ci.stage('RELEASE PROVISION');
 
 // We cannot find out what git branch has the tag, so we assume/enforce that releases are done on master
 console.log('Checking out the master branch so we can commit and push');
-ci.sh('git checkout issue/CIF-266');
+ci.sh('git checkout master');
 
 ci.sh('npm install');
 
