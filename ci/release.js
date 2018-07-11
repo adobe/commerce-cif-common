@@ -43,10 +43,14 @@ if (!bump) {
     throw new Error('Invalid release bump term.');
 }
 
+// We cannot find out what git branch has the tag, so we assume/enforce that releases are done on master
+console.log('Checking out the master branch so we can commit and push');
+ci.sh('git checkout CIF-266');
+
 ci.stage('RELEASE PROVISION');
 ci.sh('npm install');
 
-ci.stage('PERFORM RELEASE');
+ci.stage('PERFORM RELEASE ' + moduleToRelease + ':' + bump);
 try {
     ci.gitImpersonate('CircleCi', 'noreply@circleci.com', () => {
         ci.dir(releaseableModules[moduleToRelease], () => {
