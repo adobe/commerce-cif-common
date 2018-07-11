@@ -62,11 +62,11 @@ try {
             let newVersion = ci.sh(`npm --no-git-tag-version version ${bump}`).toString().trim().substr(1);
 
             // Stage package.json
-            ci.sh('git add package.json');
+            ci.sh('git add -A package.json');
             ci.sh('git status');
 
             // Commit changes
-            ch.sh(`git commit -m "@releng Release: @adobe/${moduleToRelease}-${newVersion}"`);
+            ci.sh(`git commit -m "@releng Release: @adobe/${moduleToRelease}-${newVersion}"`);
 
             // Add tag
             ci.sh(`git tag -a @adobe/${moduleToRelease}-${newVersion} -m "@adobe/${moduleToRelease}-${newVersion}"`);
