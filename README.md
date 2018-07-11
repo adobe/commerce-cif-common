@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/adobe/commerce-cif-common.svg?style=svg)](https://circleci.com/gh/adobe/commerce-cif-common)
+[![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-common.svg)](https://www.npmjs.com/package/@adobe/commerce-cif-common)
 
 # Commerce Integration Framework - common module for all implementations
 CIF Common module implementation contains the common actions that will be used by customers 
