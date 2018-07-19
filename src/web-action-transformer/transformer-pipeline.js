@@ -52,7 +52,7 @@ class TransformerPipeline {
         let httpResponse = null;
         if (resultFromOwSequence.response && resultFromOwSequence.response.body) {
             httpResponse = new HttpResponse(resultFromOwSequence.response.body,
-                                            HttpStatusCodes.OK,
+                                            resultFromOwSequence.response.statusCode,
                                             resultFromOwSequence.response.headers);
         } else if (resultFromOwSequence.response && resultFromOwSequence.response.error) {
             httpResponse = new HttpResponse({});

@@ -101,6 +101,26 @@ describe('webActionTransformer', () => {
                 assert.strictEqual(response.statusCode, 200);
             });
 
+            it('Created response - no transformer', () => {
+                const transformer = new TransformerPipeline();
+                const transformerInput = {
+                    'response': {
+                        'body': {
+                            'such-response': 'much-wow'
+                        },
+                        'statusCode': 201
+                    },
+                    'something-else': 'I am here'
+                };
+
+                const response = transformer.perform(transformerInput);
+                assert.isDefined(response);
+                assert.isUndefined(response['something-else']);
+                assert.isDefined(response.body);
+                assert.isDefined(response.headers);
+                assert.strictEqual(response.statusCode, 201);
+            });
+
             it('Error response - no transformer', () => {
                 const transformer = new TransformerPipeline();
                 const transformerInput = {
