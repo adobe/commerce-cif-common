@@ -101,6 +101,21 @@ describe('webActionTransformer', () => {
                 assert.strictEqual(response.statusCode, 200);
             });
 
+            it('Created response - no transformer', () => {
+                const transformer = new TransformerPipeline();
+                const transformerInput = {
+                    'response': {
+                        'body': {
+                        },
+                        'statusCode': 201
+                    },
+                };
+
+                const response = transformer.perform(transformerInput);
+                assert.isDefined(response);
+                assert.strictEqual(response.statusCode, 201);
+            });
+
             it('Error response - no transformer', () => {
                 const transformer = new TransformerPipeline();
                 const transformerInput = {
