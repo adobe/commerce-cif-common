@@ -106,18 +106,13 @@ describe('webActionTransformer', () => {
                 const transformerInput = {
                     'response': {
                         'body': {
-                            'such-response': 'much-wow'
                         },
                         'statusCode': 201
                     },
-                    'something-else': 'I am here'
                 };
 
                 const response = transformer.perform(transformerInput);
                 assert.isDefined(response);
-                assert.isUndefined(response['something-else']);
-                assert.isDefined(response.body);
-                assert.isDefined(response.headers);
                 assert.strictEqual(response.statusCode, 201);
             });
 
