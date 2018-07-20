@@ -42,10 +42,10 @@ class ExceptionMapperTransformerPipelineAction extends ITransformerPipelineActio
         const error = new ErrorResponse();
         // Set messgae and status code
         if (ERROR_NAME_TO_STATUS_CODE[httpResponse.error.name]) {
-            error.message = {'en': `${httpResponse.error.name}: ${httpResponse.error.message}`};
+            error.message = `${httpResponse.error.name}: ${httpResponse.error.message}`;
             httpResponse.statusCode = ERROR_NAME_TO_STATUS_CODE[httpResponse.error.name];
         } else {
-            error.message = {'en': `UnexpectedError: ${httpResponse.error.message}`};
+            error.message = `UnexpectedError: ${httpResponse.error.message}`;
             httpResponse.statusCode = HttpStatusCodes.INTERNAL_SERVER_ERROR;
         }
 
