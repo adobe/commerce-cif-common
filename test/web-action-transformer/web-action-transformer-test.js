@@ -226,6 +226,13 @@ describe('webActionTransformer', () => {
                     httpResponse.error = {'name': errorName, 'cause': {'message': 'error'}};
                     transformerAction.transform(httpResponse, {});
                     assert.strictEqual(httpResponse.statusCode, errorNameToStatusCodeMap[errorName]);
+                    let body = JSON.parse(new Buffer(httpResponse.body, 'base64'));
+                    assert.equal(body.reason, 'error');
+                    if (errorName === 'SomethingThatIsNotMapped') {
+                        assert.isTrue(body.message.startsWith('UnexpectedError'));
+                    } else {
+                        assert.isTrue(body.message.startsWith(errorName));
+                    }
                 });
             }
 
