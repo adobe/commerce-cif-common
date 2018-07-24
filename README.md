@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/adobe/commerce-cif-common.svg?style=svg)](https://circleci.com/gh/adobe/commerce-cif-common)
+[![codecov](https://codecov.io/gh/adobe/commerce-cif-common/branch/master/graph/badge.svg)](https://codecov.io/gh/adobe/commerce-cif-common)
 [![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-common.svg?label=npm%20common)](https://www.npmjs.com/package/@adobe/commerce-cif-common)
 [![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-web-action-transformer.svg?label=npm%20web-action-transformer)](https://www.npmjs.com/package/@adobe/commerce-cif-web-action-transformer)
 
