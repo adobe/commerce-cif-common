@@ -75,8 +75,8 @@ class UnexpectedError extends BaseCcifError {
  * Error returned when the value for a user facing parameter did not respect the format.
  */
 class InvalidArgumentError extends BaseCcifError {
-    constructor(message, cause) {
-        super(message, cause, 'InvalidArgumentError');
+    constructor(message) {
+        super(message, 'invalid-argument', 'InvalidArgumentError');
     }
 }
 
@@ -84,8 +84,8 @@ class InvalidArgumentError extends BaseCcifError {
  * Error returned when a mandatory input parameter is missing.
  */
 class MissingPropertyError extends BaseCcifError {
-    constructor(message, cause) {
-        super(message, cause, 'MissingPropertyError');
+    constructor(message) {
+        super(message, 'missing-property', 'MissingPropertyError');
     }
 }
 
@@ -93,8 +93,8 @@ class MissingPropertyError extends BaseCcifError {
  * Error returned when an action is not implemented.
  */
 class NotImplementedError extends BaseCcifError {
-    constructor(message, cause) {
-        super(message, cause, 'NotImplementedError');
+    constructor(message) {
+        super(message, 'not-implemented', 'NotImplementedError');
     }
 }
 
