@@ -1,6 +1,6 @@
 {
   "name": "@adobe/commerce-cif-common",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Adobe Commerce Integration Framework (CIF) Common Project",
   "main": "index.js",
   "author": "Adobe Systems Inc.",
