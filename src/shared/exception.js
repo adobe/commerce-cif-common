@@ -76,7 +76,7 @@ class UnexpectedError extends BaseCcifError {
  */
 class InvalidArgumentError extends BaseCcifError {
     constructor(message) {
-        super(message, 'invalid-argument', 'InvalidArgumentError');
+        super(message, { message: 'invalid-argument' }, 'InvalidArgumentError');
     }
 }
 
@@ -85,7 +85,7 @@ class InvalidArgumentError extends BaseCcifError {
  */
 class MissingPropertyError extends BaseCcifError {
     constructor(message) {
-        super(message, 'missing-property', 'MissingPropertyError');
+        super(message, { message: 'missing-property' }, 'MissingPropertyError');
     }
 }
 
@@ -94,7 +94,7 @@ class MissingPropertyError extends BaseCcifError {
  */
 class NotImplementedError extends BaseCcifError {
     constructor(message) {
-        super(message, 'not-implemented', 'NotImplementedError');
+        super(message, { message: 'not-implemented' }, 'NotImplementedError');
     }
 }
 
