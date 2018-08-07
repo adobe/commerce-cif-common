@@ -24,15 +24,15 @@ jobs:
 
   build-ci-image:
     working_directory: /app
-      docker:
-        - image: docker:17.09.0-ce-git
-      steps:
-        - checkout
-        - setup_remote_docker
-        - run:
-            name: Build Docker image
-            command: |
-              docker build -t adobe/commerce-cif-ci-env:latest ./ci/environment
+    docker:
+      - image: docker:17.09.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t adobe/commerce-cif-ci-env:latest ./ci/environment
 
   push-ci-image-latest:
     working_directory: /app
