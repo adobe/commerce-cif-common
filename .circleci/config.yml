@@ -12,6 +12,7 @@ jobs:
           path: test/results
       - store_artifacts:
           path: test/results
+
   release:
     docker:
       - image: adobe/commerce-cif-ci-env:v0.0.1
@@ -20,6 +21,52 @@ jobs:
       - run:
           name: Release
           command: node ci/release.js
+
+  build-ci-image:
+    working_directory: /app
+      docker:
+        - image: docker:17.09.0-ce-git
+      steps:
+        - checkout
+        - setup_remote_docker
+        - run:
+            name: Build Docker image
+            command: |
+              docker build -t adobe/commerce-cif-ci-env:latest ./ci/environment
+
+  push-ci-image-latest:
+    working_directory: /app
+    docker:
+      - image: docker:17.09.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image (Latest)
+          command: |
+            docker build -t adobe/commerce-cif-ci-env:latest ./ci/environment
+      - run:
+          name: Push image to Docker Hub
+          command: |
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker push adobe/commerce-cif-ci-env:latest
+
+  push-ci-image-tag:
+    working_directory: /app
+    docker:
+      - image: docker:17.09.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image (Tag)
+          command: |
+            docker build -t adobe/commerce-cif-ci-env:$CIRCLE_TAG ./ci/environment
+      - run:
+          name: Push image to Docker Hub
+          command: |
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+            docker push adobe/commerce-cif-ci-env:$CIRCLE_TAG
 
 workflows:
   version: 2
@@ -36,4 +83,25 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /^@(.+)@release-(major|minor|patch)$/ 
+              only: /^@(.+)@release-(major|minor|patch)$/
+
+  build-and-push-ci-image:
+    jobs:
+      - build-ci-image:
+          filters:
+            tags:
+              only: /.*/
+      - push-ci-image-latest:
+          requires:
+            - build-ci-image
+          filters:
+            branches:
+              only: master
+      - push-ci-image-tag:
+          requires:
+            - build-ci-image
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^ci-v.*$/
