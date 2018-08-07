@@ -1,15 +1,15 @@
 docker-build: &docker-build
   run:
-    name: Build Docker image (Tag)
+    name: Build Docker image
     command: |
-      docker build -t adobe/commerce-cif-ci-env:$TAG ./ci/environment
+      docker build -t adobe/commerce-cif-ci-env:${TAG:-$CIRCLE_TAG} ./ci/environment
 
 docker-push: &docker-push
   run:
     name: Push image to Docker Hub
     command: |
       docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-      docker push adobe/commerce-cif-ci-env:$TAG
+      docker push adobe/commerce-cif-ci-env:${TAG:-$CIRCLE_TAG}
 
 version: 2
 jobs:
@@ -40,7 +40,7 @@ jobs:
     docker:
       - image: docker:17.09.0-ce-git
     environment:
-       TAG: latest
+      TAG: latest
     steps:
       - checkout
       - setup_remote_docker
@@ -51,7 +51,7 @@ jobs:
     docker:
       - image: docker:17.09.0-ce-git
     environment:
-       TAG: latest
+      TAG: latest
     steps:
       - checkout
       - setup_remote_docker
@@ -62,8 +62,6 @@ jobs:
     working_directory: /app
     docker:
       - image: docker:17.09.0-ce-git
-    environment:
-       TAG: $CIRCLE_TAG
     steps:
       - checkout
       - setup_remote_docker
