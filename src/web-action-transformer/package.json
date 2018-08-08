@@ -1,6 +1,6 @@
 {
   "name": "@adobe/commerce-cif-web-action-transformer",
-  "version": "0.1.20",
+  "version": "1.0.0",
   "description": "Adobe Commerce Integration Framework (CIF) Web Action Transformer Project",
   "main": "index.js",
   "author": "Adobe Systems Inc.",
@@ -10,15 +10,15 @@
     "url": "https://github.com/adobe/commerce-cif-common.git"
   },
   "dependencies": {
-    "@adobe/commerce-cif-common": "0.1.15",
-    "@adobe/commerce-cif-model": "0.1.119",
+    "@adobe/commerce-cif-common": "1.0.0",
+    "@adobe/commerce-cif-model": "1.0.0",
     "http-status-codes": "1.1.6"
   },
   "devDependencies": {
     "eslint": "3.19.0",
     "eslint-plugin-header": "1.2.0",
-    "serverless": "1.26.0",
-    "serverless-openwhisk": "0.10.1",
+    "serverless": "1.29.2",
+    "serverless-openwhisk": "0.14.0",
     "serverless-webpack": "4.3.0",
     "webpack": "4.0.1"
   },
