@@ -39,25 +39,36 @@ class ExceptionMapperTransformerPipelineAction extends ITransformerPipelineActio
             return httpResponse;
         }
 
-        const error = new ErrorResponse();
-        // Set messgae and status code
+        let message, reason, type;
+
+        // Set message and status code
         if (ERROR_NAME_TO_STATUS_CODE[httpResponse.error.name]) {
-            error.message = `${httpResponse.error.name}: ${httpResponse.error.message}`;
+            message = `${httpResponse.error.name}: ${httpResponse.error.message}`;
             httpResponse.statusCode = ERROR_NAME_TO_STATUS_CODE[httpResponse.error.name];
         } else {
-            error.message = `UnexpectedError: ${httpResponse.error.message}`;
+            message = `UnexpectedError: ${httpResponse.error.message}`;
             httpResponse.statusCode = HttpStatusCodes.INTERNAL_SERVER_ERROR;
         }
 
         // Set the reason
         if (httpResponse.error.cause && httpResponse.error.cause.message) {
-            error.reason = httpResponse.error.cause.message;
+            reason = httpResponse.error.cause.message;
+        } else {
+            reason = 'unknown reason';
         }
 
         // Set the type
         if (resultFromOwSequence && resultFromOwSequence.response && resultFromOwSequence.response.errorType) {
-            error.type = resultFromOwSequence.response.errorType;
+            type = resultFromOwSequence.response.errorType;
+        } else {
+            type = 'unknown type';
         }
+
+        let error = new ErrorResponse.Builder()
+            .withMessage(message)
+            .withReason(reason)
+            .withType(type)
+            .build();
 
         httpResponse.setBody(error);
         return httpResponse;
