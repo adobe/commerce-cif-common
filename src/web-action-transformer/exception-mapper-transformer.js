@@ -39,7 +39,9 @@ class ExceptionMapperTransformerPipelineAction extends ITransformerPipelineActio
             return httpResponse;
         }
 
-        let message, reason, type;
+        let message;
+        let reason;
+        let type;
 
         // Set message and status code
         if (ERROR_NAME_TO_STATUS_CODE[httpResponse.error.name]) {
