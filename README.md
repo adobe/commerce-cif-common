@@ -26,3 +26,11 @@ To run linting, tests and coverage analysis, run `npm test` in the root folder.
 
 ## Deployment
 Deployment instructions are available in the repository specific to each CIF integration.
+
+### Contributing
+
+Contributions are welcomed! Read the [Contributing Guide](.github/CONTRIBUTING.md) for more information.
+
+### Licensing
+
+This project is licensed under the Apache V2 License. See [LICENSE](LICENSE) for more information.
