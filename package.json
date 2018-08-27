@@ -14,7 +14,8 @@
     "devDependencies": {
         "lerna": "2.9.0",
         "mocha": "5.2.0",
-        "xunit-file": "1.0.0",
+        "mocha-junit-reporter": "1.18.0",
+        "mocha-multi-reporters": "1.1.7",
         "nyc": "11.1.0",
         "chai": "4.0.2",
         "sinon": "5.1.0",
@@ -34,14 +35,14 @@
         "all": true
     },
     "scripts": {
-        "postinstall": "$(npm bin)/lerna bootstrap",
-        "globalinstall": "npm install -g lerna@2.0.0-rc.5",
-        "generate-cov-html": "$(npm bin)/nyc report --reporter=html",
-        "unit": "$(npm bin)/mocha test/**/*test.js",
-        "test-cov": "XUNIT_FILE=test/results/unit/results.xml $(npm bin)/nyc $(npm bin)/mocha test/**/*test.js -R xunit-file && $(npm bin)/nyc report --reporter=lcov",
-        "test": "$(npm bin)/lerna run lint && npm run test-cov && npm run generate-cov-html",
-        "test-it": "XUNIT_FILE=test/results/integration/results.xml $(npm bin)/mocha test/**/*it.js -R xunit-file",
-        "deploy": "$(npm bin)/lerna run deploy-package",
-        "remove": "$(npm bin)/lerna run remove-package"
+        "postinstall": "lerna bootstrap",
+        "generate-cov-html": "nyc report --reporter=html",
+        "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json",
+        "test-it": "mocha test/**/*IT.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json",
+        "lcov-report": "nyc report --reporter=lcov",
+        "test-cov": "nyc npm run unit && npm run lcov-report",
+        "test": "lerna run lint && npm run test-cov && npm run generate-cov-html",
+        "deploy": "lerna run deploy-package",
+        "remove": "lerna run remove-package"
     }
 }

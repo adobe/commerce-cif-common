@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "eslint": "3.19.0",
-    "eslint-plugin-header": "1.2.0",
+    "eslint-plugin-header": "git+https://github.com/herzog31/eslint-plugin-header.git",
     "serverless": "1.29.2",
     "serverless-openwhisk": "0.14.0",
     "serverless-webpack": "4.3.0",
@@ -26,10 +26,11 @@
     "extends": "../../.eslintrc.js"
   },
   "scripts": {
-    "lint": "$(npm bin)/eslint -f table --ignore-path ../../.eslintignore .",
-    "package": "$(npm bin)/serverless package",
-    "deploy": "$(npm bin)/serverless deploy",
-    "remove": "$(npm bin)/serverless remove",
+    "fix-serverless-permission": "chmod +x $(npm bin)/serverless",
+    "lint": "eslint -f table --ignore-path ../../.eslintignore .",
+    "package": "serverless package",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove",
     "deploy-latest": "wsk -i package create web-action-transformer@latest --shared yes; npm run deploy -- --ow-package web-action-transformer@latest",
     "deploy-current": "wsk -i package create web-action-transformer@$npm_package_version --shared yes; npm run deploy",
     "deploy-suffix": "wsk -i package create web-action-transformer@${OW_PACKAGE_SUFFIX} --shared yes; npm run deploy -- --ow-package web-action-transformer@${OW_PACKAGE_SUFFIX}",
