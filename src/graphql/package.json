@@ -1,0 +1,28 @@
+{
+  "name": "@adobe/commerce-cif-graphql",
+  "version": "0.0.1",
+  "description": "Adobe Commerce Integration Framework (CIF) GraphQL Project",
+  "main": "cifEndpoint.js",
+  "author": "Adobe Systems Inc.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/commerce-cif-common.git"
+  },
+  "dependencies": {
+    "@adobe/commerce-cif-common": "1.0.0",
+    "@adobe/commerce-cif-model": "1.1.2",
+    "graphql": "14.0.0",
+    "graphql-tools": "3.1.1"
+  },
+  "devDependencies": {
+    "eslint": "3.19.0",
+    "eslint-plugin-header": "2.0"
+  },
+  "eslintConfig": {
+    "extends": "../../.eslintrc.js"
+  },
+  "scripts": {
+    "lint": "eslint -f table --ignore-path ../../.eslintignore ."
+  }
+}
