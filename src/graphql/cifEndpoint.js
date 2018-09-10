@@ -28,7 +28,7 @@ const schema = makeExecutableSchema({ typeDefs: graphqlSchema });
  * @param   {ClientBase}     client          //custom client requires _handleSuccess and _handleError functions
  * @return  {Promise.<ExecutionResult>}
  */
-function cifEndpoint(args, client, customEndpoint) {
+function cifEndpoint(args, customEndpoint) {
     let query = args.query || "";
     // DocumentNode of query or encountered errors
     let document = validateAndParseQuery(schema, query);
@@ -37,13 +37,17 @@ function cifEndpoint(args, client, customEndpoint) {
         //let graphql function handle errors and IntrospectionQueries
         return graphql(schema, query, null, null, args.variables, args.operationName)
             .then(result => {
-                return client._handleSuccess(result, null);
+                let headers = args.headers || {};
+                headers['OW-Activation-Id'] = process.env.__OW_ACTIVATION_ID;
+                args['response'] = { 'statusCode': 200, 'body': result, 'headers': headers };
+                return args;
             })
             .catch(e => {
-                return client._handleError(e);
+                args['response'] = { 'error': e, 'errorType': 'graphql' };
+                return args;
             });
     } else {
-        return customEndpoint(args, client);
+        return customEndpoint(args);
     }
 }
 

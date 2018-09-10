@@ -22,19 +22,6 @@ const { invalidField, syntaxError, introSpectionQuery } = require('../resources/
 
 const endpoint = require('../../src/graphql/cifEndpoint').main;
 
-const TestClient = {
-    _handleSuccess: (body) => {
-        return {
-            response: {
-                body: body
-            }
-        }
-    },
-    _handleError: (error) => {
-        throw error;
-    }
-}
-
 const customEndpoint = () => {
     return Promise.resolve("reached custom endpoint");
 }
@@ -46,7 +33,7 @@ describe('CIF common graphql endpoint', () => {
         it('performs schema introspection', () => {
             return endpoint({
                 query: introSpectionQuery,
-            }, TestClient, null)
+            }, null)
                 .then(result => {
                     assert.isDefined(result.response.body);
                     assert.isDefined(result.response.body.data);
@@ -56,7 +43,7 @@ describe('CIF common graphql endpoint', () => {
         it('returns an error body for syntax errors', () => {
             return endpoint({
                 query: syntaxError
-            }, TestClient, null)
+            }, null)
             .then(result => {
                 assert.isDefined(result.response.body.errors);
                 assert.isArray(result.response.body.errors);
@@ -68,7 +55,7 @@ describe('CIF common graphql endpoint', () => {
         it('returns an error body for invalid fields', () => {
             return endpoint({
                 query: invalidField
-            }, TestClient, null).then(result => {
+            }, null).then(result => {
                 assert.isDefined(result.response.body.errors);
                 assert.isArray(result.response.body.errors);
                 let error = result.response.body.errors[0];
@@ -80,9 +67,11 @@ describe('CIF common graphql endpoint', () => {
             return endpoint({
                 query: introSpectionQuery,
                 variables: "asd"
-            }, TestClient, null)
+            }, null)
             .catch(err => {
-                assert.isDefined(err);
+                assert.isDefined(err.response.error);
+                assert.isDefined(err.response.errorType);
+                assert.deepEqual(err.response.errorType, 'graphql');
             });
         });
 
@@ -90,7 +79,7 @@ describe('CIF common graphql endpoint', () => {
             return endpoint({
                 query: 
                     ` { searchProducts { total } }`
-            }, TestClient, customEndpoint)
+            }, customEndpoint)
             .then(result => {
                 assert.deepEqual(result, "reached custom endpoint");
             });
