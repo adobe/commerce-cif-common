@@ -26,16 +26,7 @@ const gqlQuery = `
         }
     }
 `;
-const gqlObj = {
-    pets: {
-        name: true,
-        age: true,
-        owner: {
-            gender: true,
-            age: true
-        }
-    }
-};
+
 const typeDefs = `
     type Query {
         pets: [Animal]
@@ -56,4 +47,4 @@ const typeDefs = `
     }
 `;
 
-module.exports = { gqlQuery, gqlObj, typeDefs };
+module.exports = { gqlQuery, typeDefs };

@@ -37,12 +37,18 @@ function cifEndpoint(args, customEndpoint) {
         //let graphql function handle errors and IntrospectionQueries
         return graphql(schema, query, null, null, args.variables, args.operationName)
             .then(result => {
-                let headers = args.headers || {};
-                headers['OW-Activation-Id'] = process.env.__OW_ACTIVATION_ID;
+                let headers = {};
+                if (args.DEBUG) {
+                    headers['OW-Activation-Id'] = process.env.__OW_ACTIVATION_ID;
+                }
                 args['response'] = { 'statusCode': 200, 'body': result, 'headers': headers };
                 return args;
             })
             .catch(e => {
+                if (args.DEBUG) {
+                    args.headers = args.headers || {};
+                    args.headers['OW-Activation-Id'] = process.env.__OW_ACTIVATION_ID;
+                }
                 args['response'] = { 'error': e, 'errorType': 'graphql' };
                 return args;
             });

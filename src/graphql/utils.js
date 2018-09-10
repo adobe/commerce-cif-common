@@ -28,18 +28,19 @@ function gqlToObject(node) {
     let object = {};
     if (node.selectionSet) {
         let selections = node.selectionSet.selections;
-        //TODO: map instead of forEach
         selections.forEach(sel => {
             let name = sel.name.value;
-            //TODO: handle alias
-            object[name] = gqlToObject(sel);
-            if (sel.arguments.length > 0) {
-                object[name].args = _parseArguments(sel.arguments);
+            let alias = sel.alias ? sel.alias.value : undefined
+            let field = alias || name;
+            object[field] = gqlToObject(sel);
+            if(alias !== undefined) {
+                object[field].__aliasFor = name;
             }
-        })
-    } else {
-        return true;
-    }
+            if (sel.arguments.length > 0) {
+                object[field].__args = _parseArguments(sel.arguments);
+            }
+        });
+    } 
     return object;
 }
 
@@ -64,7 +65,6 @@ function _parseArguments(args) {
  * @param {GraphQLSchema} schema    GraphQLSchema to validate the source against
  * @param {Source} source           Query | Mutation | Subscription
  * 
- * @throws {GraphQLError} if a SyntaxError is encountered
  * @return array of encountered errors or the source's Document if no errors encountered
  */
 function validateAndParseQuery(schema, source) {

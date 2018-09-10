@@ -23,19 +23,10 @@ const assert = chai.assert;
   
 describe('GraphQL utilities', () => {
 
-   const { gqlQuery, gqlObj, typeDefs } = require('../resources/utilsResources');
+   const { gqlQuery, typeDefs } = require('../resources/utilsResources');
+   const { simpleAlias, variousRootFieldAlias, rootFieldArgs, fieldArgs, nestedArgs, arrayArgs } = require('../resources/AliasAndArgsQueries');
 
     describe('Unit Tests', () => {
-        it('transforms a graphql query into a json object', () => {
-            try {
-                let doc = parse(gqlQuery);
-                let object = gqlToObject(doc.definitions[0]);
-                assert.deepEqual(object, gqlObj);
-            } catch (e) {
-                console.log('There was an error in parsing the query');
-                throw e;
-            }
-        });
 
         it('returns document of a valid query', () => {
             let doc = validateAndParseQuery(makeExecutableSchema({ typeDefs }), gqlQuery);
@@ -60,19 +51,40 @@ describe('GraphQL utilities', () => {
             assert.startsWith(err.message, "Cannot query field");
         });
 
-        it('parses arguments correctly', () => {
-            let text = "hi";
-            let q = `{
-                quro(text: ${text}, filter: ["filter"]) {
-                    gender
-                }
-            }`
-            let o = gqlToObject(parse(q).definitions[0])
-            assert.hasAllKeys(o, 'quro');
-            assert.containsAllKeys(o.quro, 'args');
-            assert.hasAnyKeys(o.quro.args, ["text", "filter"])
-            assert.equal(o.quro.args.text, text);
-            assert.isArray(o.quro.args.filter);
+        it('handles simple alias correctly', () => {
+            let actualObject = gqlToObject(parse(simpleAlias.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, simpleAlias.object);
+            assert.deepEqual(actualObject, simpleAlias.object);
+        });
+
+        it('supports various aliases for same field correctly', () => {
+            let actualObject = gqlToObject(parse(variousRootFieldAlias.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, variousRootFieldAlias.object);
+            assert.deepEqual(actualObject, variousRootFieldAlias.object);
+        });
+
+        it('parses root field args correctly', () => {
+            let actualObject = gqlToObject(parse(rootFieldArgs.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, rootFieldArgs.object);
+            assert.deepEqual(actualObject, rootFieldArgs.object);
+        });
+
+        it('parses simple field args correctly', () => {
+            let actualObject = gqlToObject(parse(fieldArgs.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, fieldArgs.object);
+            assert.deepEqual(actualObject, fieldArgs.object);
+        });
+
+        it('parses nested args correctly', () => {
+            let actualObject = gqlToObject(parse(nestedArgs.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, nestedArgs.object);
+            assert.deepEqual(actualObject, nestedArgs.object);
+        });
+
+        it('parses array args correctly', () => {
+            let actualObject = gqlToObject(parse(arrayArgs.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, arrayArgs.object);
+            assert.deepEqual(actualObject, arrayArgs.object);
         });
     });
 });

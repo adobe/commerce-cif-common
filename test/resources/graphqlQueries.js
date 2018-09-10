@@ -104,12 +104,12 @@ const introSpectionQuery = `query IntrospectionQuery {
         }
       }
     }
-  }`
+  }`;
 
 let syntaxError = `{
     searchProducts(text: "meskwielt"){
         total
-}`
+}`;
 
 let invalidField = `{
     searchProducts(text: "meskwielt"){
@@ -117,6 +117,6 @@ let invalidField = `{
             unicorn
         }
     }
-}`
+}`;
 
 module.exports = { invalidField, syntaxError, introSpectionQuery }

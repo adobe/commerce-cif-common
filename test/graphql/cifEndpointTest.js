@@ -63,7 +63,7 @@ describe('CIF common graphql endpoint', () => {
             });
         });
 
-        it('delegates errors to client', () => {
+        it('returns errors and errorType in response', () => {
             return endpoint({
                 query: introSpectionQuery,
                 variables: "asd"
