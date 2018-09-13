@@ -46,7 +46,7 @@ describe('webActionTransformer', () => {
 
             it('Constructor with body', () => {
                 const httpResponse = new HttpResponse({'response': 'yes'});
-                assert.strictEqual(httpResponse.body, 'eyJyZXNwb25zZSI6InllcyJ9');
+                assert.strictEqual(httpResponse.body, JSON.stringify({'response': 'yes'}));
                 assert.strictEqual(httpResponse.statusCode, 200);
             });
 
@@ -64,9 +64,9 @@ describe('webActionTransformer', () => {
 
             it('set body', () => {
                 const httpResponse = new HttpResponse({'response': 'yes'});
-                assert.strictEqual(httpResponse.body, 'eyJyZXNwb25zZSI6InllcyJ9');
+                assert.strictEqual(httpResponse.body, JSON.stringify({'response': 'yes'}));
                 httpResponse.setBody({'response': 'no'});
-                assert.strictEqual(httpResponse.body, 'eyJyZXNwb25zZSI6Im5vIn0=');
+                assert.strictEqual(httpResponse.body, JSON.stringify({'response': 'no'}));
             });
 
             it('toJson', () => {
@@ -183,7 +183,7 @@ describe('webActionTransformer', () => {
 
                 // Asert
                 assert.isDefined(response);
-                assert.strictEqual(response.body, 'eyJmcm9tLXRyYW5zZm9ybWVyIjoieWVzIn0=');
+                assert.strictEqual(response.body, JSON.stringify({'from-transformer': 'yes'}));
                 assert.strictEqual(response.statusCode, 207);
                 assert.strictEqual(response.headers['something-else'], 'I am here');
                 assert.strictEqual(response.headers['something'], 'First header');
@@ -226,7 +226,7 @@ describe('webActionTransformer', () => {
                     httpResponse.error = {'name': errorName, 'cause': {'message': 'error'}};
                     transformerAction.transform(httpResponse, {});
                     assert.strictEqual(httpResponse.statusCode, errorNameToStatusCodeMap[errorName]);
-                    let body = JSON.parse(new Buffer(httpResponse.body, 'base64'));
+                    let body = JSON.parse(httpResponse.body);
                     assert.equal(body.reason, 'error');
                     if (errorName === 'SomethingThatIsNotMapped') {
                         assert.isTrue(body.message.startsWith('UnexpectedError'));
@@ -247,8 +247,7 @@ describe('webActionTransformer', () => {
 
                 transformerAction.transform(httpResponse, fromOw);
 
-                // Decode base64 from response body and parse it as JSON.
-                const responseBody = JSON.parse(Buffer.from(httpResponse.body, 'base64').toString());
+                const responseBody = JSON.parse(httpResponse.body);
                 assert.strictEqual(responseBody.type, 'sample-error-type');
             });
         });

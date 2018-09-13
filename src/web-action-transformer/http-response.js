@@ -59,7 +59,7 @@ class HttpResponse {
 
     setBody(body) {
         if (body) {
-            this.body = new Buffer(JSON.stringify(body)).toString('base64');
+            this.body = JSON.stringify(body);
         }
     }
 
