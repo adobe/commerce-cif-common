@@ -1,7 +1,7 @@
 [![CircleCI](https://circleci.com/gh/adobe/commerce-cif-common.svg?style=svg)](https://circleci.com/gh/adobe/commerce-cif-common)
 [![codecov](https://codecov.io/gh/adobe/commerce-cif-common/branch/master/graph/badge.svg)](https://codecov.io/gh/adobe/commerce-cif-common)
 [![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-common.svg?label=npm%20common)](https://www.npmjs.com/package/@adobe/commerce-cif-common)
-[![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-web-action-transformer.svg?label=npm%20web-action-transformer)](https://www.npmjs.com/package/@adobe/commerce-cif-web-action-transformer)
+[![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-web-action-transformer.svg?label=npm%20web-action-transformer)](https://www.npmjs.com/package/@adobe/commerce-cif-web-action-transformer) [![Greenkeeper badge](https://badges.greenkeeper.io/adobe/commerce-cif-common.svg)](https://greenkeeper.io/)
 
 # Commerce Integration Framework - common module for all implementations
 CIF Common module implementation contains the common actions that will be used by customers 
