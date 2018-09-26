@@ -22,7 +22,7 @@ const validateAndParseQuery = require('./utils').validateAndParseQuery;
 const schema = makeExecutableSchema({ typeDefs: graphqlSchema });
 
 /**
- * This action handles IntroSpection Queries and GraphQL Syntax Errors for GrahphQL
+ * This action handles Introspection Queries and GraphQL Syntax Errors for GraphQL
  * and delegates the rest of the GraphQL requests to the passed dataQueryHandler
  * @param   {object}   args      
  * @param   {Source}   args.query        //entering GraphQL query

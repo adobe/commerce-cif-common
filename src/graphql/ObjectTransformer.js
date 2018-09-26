@@ -17,7 +17,7 @@
 const recursiveMerge = require('./utils').recursiveMerge;
 
 /**
- * An ObjectTransformer transforms object types:
+ * An ObjectTransformer transforms objects according to their transform rules:
  * 
  * adders on objects will add all the fields in adder.add if adder.for is present (to the object itself or subObjects)
  * (it will add all the fields in adder.add in anycase if adder.for is not specified)
@@ -37,14 +37,14 @@ class ObjectTransformer {
 
     /**
      * 
-     * @param {object} transformsObject     object represantation of graphql schema containing the transforms
+     * @param {object} transformRules     object represantation of graphql schema containing the transforms
      */
-    constructor(transformsObject) {
-        this.transformsObject = transformsObject || {};
+    constructor(transformRules) {
+        this.transformRules = transformRules || {};
     }
 
     /**
-     * takes care that all the transforms are being executed in the right order
+     * transforms/modifies the toTransform object according to the transformRules
      * 
      * 1. adders
      * 2. transforms on subobjects
@@ -54,13 +54,13 @@ class ObjectTransformer {
      * 6. alias
      * 7. inlineFragments
      * 
-     * @param {object} toTransform           object to be transformed
-     * @param {object} transformsObject      object with all the relevant transforms for the current object
+     * @param {object} toTransform         object to be transformed
+     * @param {object} transformRules      object with all the relevant transforms for the current object
      * 
      * @returns {boolean} indicating if the object results in an empty object (should never be the case for main query)
      */
-    transform(toTransform, transformsObject) {
-        let transforms = transformsObject || this.transformsObject;
+    transform(toTransform, transformRules) {
+        let transforms = transformRules || this.transformRules;
 
         if (transforms.adders) {
             this.addFields(toTransform, transforms.adders);
@@ -85,7 +85,7 @@ class ObjectTransformer {
             this.moveFields(toTransform, transforms.moveFields);
         }
         if (transforms.alias) {
-            toTransform.__cifName = toTransform.__aliasFor || null;
+            toTransform.__initialAlias = toTransform.__aliasFor || null;
             toTransform.__aliasFor = transforms.alias;
         }
         if (transforms.inlineFragments) {
@@ -233,8 +233,8 @@ class ObjectTransformer {
      * 
      * @private
      */
-    checkAllNames(cifName, ctAlias, fieldName) {
-        return (!cifName && !ctAlias || cifName === null || !cifName && ctAlias === fieldName);
+    checkAllNames(initialAlias, ctAlias, fieldName) {
+        return (!initialAlias && !ctAlias || initialAlias === null || !initialAlias && ctAlias === fieldName);
     }
 
     /**
@@ -247,14 +247,16 @@ class ObjectTransformer {
      */
     includesField(object, fieldName) {
         //shortCut for non-alias fields
-        if (object[fieldName] && this.checkAllNames(object[fieldName].__cifName, object[fieldName].__aliasFor, fieldName)) {
+        if (object[fieldName] && this.checkAllNames(object[fieldName].__initialAlias, object[fieldName].__aliasFor, fieldName)) {
             return fieldName;
         }
         //cannot use forEach because cannot break out of it
         for (let key in object) {
-            let field = object[key] ? object[key].__cifName || object[key].__aliasFor : null;
-            if (fieldName === field) {
-                return key;
+            if (object[key]) {
+                let field = object[key].__cifName !== null ? object[key].__cifName || object[key].__aliasFor : null;
+                if (fieldName === field) {
+                    return key;
+                }
             }
         }
         return;

@@ -17,21 +17,21 @@
 /**
  * Used for transforming arguments of one GraphQL schema into another.
  * 
- * The ArgsTransformer class transforms arguments of all objects as defined in the argsFunctions.
+ * The ArgsTransformer class transforms arguments of all objects as defined in the transformRules.
  */
 class ArgsTransformer {
 
     /**
-     * @param {object}    argsFunctions            of form {argument name: handler function}
+     * @param {object}    transformRules           of form {argument name: handler function}
      * @param {object}    [checkArgsOnFields]      of form {field name, [check arguments]} for those fields,
      *                                             the arguments in the array will be called in any case
-     * @param {string}    [argsFieldName = '__args'] name of the arguments property ('__args' by default)
+     * @param {string}    [argsPropertyName = '__args'] name of the arguments property ('__args' by default)
      * 
      */
-    constructor(argsFunctions, checkArgsOnFields = {}, argsFieldName = '__args') {
-        this.arguments = argsFunctions;
+    constructor(transformRules, checkArgsOnFields = {}, argsPropertyName = '__args') {
+        this.arguments = transformRules;
         this.fields = checkArgsOnFields;
-        this.args = argsFieldName;
+        this.args = argsPropertyName;
     }
 
     /**

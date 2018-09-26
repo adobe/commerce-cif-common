@@ -14,71 +14,85 @@
 
 'use strict';
 
-const noTransformsObject = {
-    filterAndMappers: {
-        searchProducts: (originalObject, resultsObject, fieldName) => {
-            let searchProducts = originalObject[fieldName];
-            let products = resultsObject[fieldName];
+const simpleFieldsMapper = {
+    mappers: {
+        searchProducts: (originalRequest, dataObject, fieldName) => {
+            let searchProducts = originalRequest[fieldName];
+            let products = dataObject[fieldName];
+            let response = {};
             if (searchProducts.total) {
-                searchProducts.total = products.total;
+                response.total = products.total;
             }
-            return searchProducts;
+            return response;
         }
     },
-    originalObject: {
+
+    originalRequest: {
         searchProducts: {
             total: {}
         }
     },
-    resultsObject: {
+
+    dataObject: {
         searchProducts: {
             total: 50
         }
     },
-    expectedObject: function() {
-        return { searchProducts: this.filterAndMappers.searchProducts(this.originalObject, this.resultsObject, "searchProducts") };
+
+    expectedResponse: {
+        searchProducts: {
+            total: 50
+        }
     }
 };
 
-const aliasObject = {
-    filterAndMappers: {
-        searchProducts: (originalObject, resultsObject, fieldName) => {
-            let searchProducts = originalObject[fieldName];
-            let products = resultsObject[fieldName];
+const aliasMapper = {
+    mappers: {
+        searchProducts: (originalRequest, dataObject, fieldName) => {
+            let searchProducts = originalRequest[fieldName];
+            let products = dataObject[fieldName];
+            let response = {};
             if (searchProducts.total) {
-                searchProducts.total = products.total;
+                response.total = products.total;
             }
-            return searchProducts;
+            return response;
         }
     },
-    originalObject: {
+
+    originalRequest: {
         products: {
             __aliasFor: "searchProducts",
             total: {}
         }
     },
-    resultsObject: {
+
+    dataObject: {
         products: {
             total: 50
         }
     },
-    expectedObject: function() {
-        return { products: this.filterAndMappers.searchProducts(this.originalObject, this.resultsObject, "products") };
+    
+    expectedResponse: {
+        products: {
+            total: 50
+        }
     }
 };
 
 const multipleAliasForSameField = {
-    filterAndMappers: {
-        searchProducts: (originalObject, resultsObject, fieldName) => {
-            let searchProducts = originalObject[fieldName];
-            let products = resultsObject[fieldName];
+    mappers: {
+        searchProducts: (originalRequest, dataObject, fieldName) => {
+            let searchProducts = originalRequest[fieldName];
+            let products = dataObject[fieldName];
+            let response = {};
             if (searchProducts.total) {
-                searchProducts.total = products.total;
+                response.total = products.total;
             }
-            return searchProducts;
+            return response;
         }
     },
-    originalObject: {
+
+    originalRequest: {
         products: {
             __aliasFor: "searchProducts",
             total: {}
@@ -88,7 +102,8 @@ const multipleAliasForSameField = {
             total: {}
         }
     },
-    resultsObject: {
+
+    dataObject: {
         products: {
             total: 50
         },
@@ -96,14 +111,17 @@ const multipleAliasForSameField = {
             total: 50
         }
     },
-    expectedObject: function() {
-        return { 
-            products: this.filterAndMappers.searchProducts(this.originalObject, this.resultsObject, "products"),
-            products2: this.filterAndMappers.searchProducts(this.originalObject, this.resultsObject, "products2")
+
+    expectedResponse: {
+        products: {
+            total: 50
+        },
+        products2: {
+            total: 50
         }
-    }
+    },
 };
 
 
 
-module.exports = { noTransformsObject, aliasObject, multipleAliasForSameField };
+module.exports = { simpleFieldsMapper, aliasMapper, multipleAliasForSameField };

@@ -17,20 +17,20 @@
 const chai = require('chai');
 const assert = chai.assert;
 
-const ObjectTransformer = require('../../src/graphql/ObjectTransformer');
+const ObjectMapper = require('../../src/graphql/ResponseMapper');
 
-const transforms = require('../resources/object-transforms');
+const mapperObjects = require('../resources/object-filtersAndMappers');
 
-describe('ObjectTransformer', () => {
+describe('ResultMapper', () => {
 
     describe('Unit tests', () => {
 
-        Object.keys(transforms).forEach(t => {
-            it('transforms an object according to ' + t + " rules", () => {
-                let object = transforms[t];
-                const transformer = new ObjectTransformer(object.transformRules);
-                transformer.transform(object.initialRequest);
-                assert.deepEqual(object.initialRequest, object.transformedRequest);
+        Object.keys(mapperObjects).forEach(mapperObj => {
+            it('behaves according to mapper: ' + mapperObj, () => {
+                let object = mapperObjects[mapperObj];
+                const mapper = new ObjectMapper(object.mappers);
+                let response = mapper.map(object.originalRequest, object.dataObject);
+                assert.deepEqual(response, object.expectedResponse);
             });
         });
     });

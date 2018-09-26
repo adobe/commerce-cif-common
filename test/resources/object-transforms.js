@@ -15,59 +15,59 @@
 'use strict';
 
 const aliasField = {
-    transformObject: {
-        searchProducts: {
-            alias: "products"
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             total: {}
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            alias: "products"
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             total: {},
             __aliasFor: "products",
-            __cifName: null
+            __initialAlias: null
         }
     }
 };
 
 const aliasFieldAlias = {
-    transformObject: {
-        searchProducts: {
-            alias: "products"
-        }
-    },
-    actualObject: {
-        searchProducts: {
+    initialRequest: {
+        myProducts: {
             __aliasFor: "searchProducts",
             total: {}
         }
     },
-    expectedObject: {
+    transformRules: {
         searchProducts: {
+            alias: "products"
+        }
+    },
+    transformedRequest: {
+        myProducts: {
             total: {},
             __aliasFor: "products",
-            __cifName: "searchProducts"
+            __initialAlias: "searchProducts"
         }
     }
 };
 
 const ignoreFields = {
-    transformObject: {
-        searchProducts: {
-            ignore: ["total"]
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             total: {},
             offset: {}
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            ignore: ["total"]
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             offset: {}
         }
@@ -75,14 +75,7 @@ const ignoreFields = {
 };
 
 const deleteEmptyObject = {
-    transformObject: {
-        searchProducts: {
-            results: {
-                ignore: ["sku"]
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             total: {},
             results: {
@@ -90,7 +83,14 @@ const deleteEmptyObject = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            results: {
+                ignore: ["sku"]
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             total: {}
         }
@@ -98,25 +98,32 @@ const deleteEmptyObject = {
 };
 
 const deleteConditionalEmptyObject = {
-    transformObject: {
-        searchProducts: {
-            results: {
-                ignore: ["sku"]
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             results: {
                 sku: {}
             }
         }
     },
-    expectedObject: {}
+    transformRules: {
+        searchProducts: {
+            results: {
+                ignore: ["sku"]
+            }
+        }
+    },
+    transformedRequest: {}
 };
 
 const addSameLevelField = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                masterVariantId: {}
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 adders: [{
@@ -126,14 +133,7 @@ const addSameLevelField = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                masterVariantId: {}
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 masterVariantId: {},
@@ -144,7 +144,16 @@ const addSameLevelField = {
 };
 
 const addFromSublevel = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                masterVariant: {
+                    id: {}
+                }
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 adders: [{
@@ -154,16 +163,7 @@ const addFromSublevel = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                masterVariant: {
-                    id: {}
-                }
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 masterVariant: {
@@ -176,7 +176,14 @@ const addFromSublevel = {
 };
 
 const addToSublevel = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                masterVariantId: {}
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 adders: [{
@@ -186,14 +193,7 @@ const addToSublevel = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                masterVariantId: {}
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 masterVariantId: {},
@@ -206,7 +206,14 @@ const addToSublevel = {
 };
 
 const addMultipleFields = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                masterVariantId: {}
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 adders: [{
@@ -216,14 +223,7 @@ const addMultipleFields = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                masterVariantId: {}
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 sku: {},
@@ -237,7 +237,15 @@ const addMultipleFields = {
 };
 
 const multipleAdders = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                masterVariantId: {},
+                SpongeBob: {}
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 adders: [
@@ -253,15 +261,7 @@ const multipleAdders = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                masterVariantId: {},
-                SpongeBob: {}
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 sku: {},
@@ -277,7 +277,14 @@ const multipleAdders = {
 };
 
 const ignoresNotPresentAdders = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                id: {}
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 adders: [{
@@ -287,14 +294,7 @@ const ignoresNotPresentAdders = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                id: {}
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 id: {}
@@ -304,17 +304,7 @@ const ignoresNotPresentAdders = {
 };
 
 const moveAllFields = {
-    transformObject: {
-        searchProducts: {
-            results: {
-                moveFields: [{
-                    from: "variants",
-                    to: "variants.variantsName"
-                }]
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             results: {
                 variants: {
@@ -327,7 +317,17 @@ const moveAllFields = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            results: {
+                moveFields: [{
+                    from: "variants",
+                    to: "variants.variantsName"
+                }]
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             results: {
                 variants: {
@@ -345,18 +345,7 @@ const moveAllFields = {
 };
 
 const moveSelectedField = {
-    transformObject: {
-        searchProducts: {
-            results: {
-                moveFields: [{
-                    from: 'variants',
-                    fields: ["sku", "id"],
-                    to: "moved"
-                }]
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             results: {
                 variants: {
@@ -369,7 +358,18 @@ const moveSelectedField = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            results: {
+                moveFields: [{
+                    from: 'variants',
+                    fields: ["sku", "id"],
+                    to: "moved"
+                }]
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             results: {
                 moved: {
@@ -387,17 +387,7 @@ const moveSelectedField = {
 };
 
 const moveWithoutFrom = {
-    transformObject: {
-        searchProducts: {
-            results: {
-                moveFields: [{
-                    fields: ["sku", "id"],
-                    to: "moved"
-                }]
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             results: {
                 id: {},
@@ -408,7 +398,17 @@ const moveWithoutFrom = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            results: {
+                moveFields: [{
+                    fields: ["sku", "id"],
+                    to: "moved"
+                }]
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             results: {
                 moved: {
@@ -424,7 +424,15 @@ const moveWithoutFrom = {
 };
 
 const deltesEmptyFieldAfterMove = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                id: {},
+                sku: {}
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             moveFields: [{
                 from: "results",
@@ -433,15 +441,7 @@ const deltesEmptyFieldAfterMove = {
             }]
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                id: {},
-                sku: {}
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             moved: {
                 id: {},
@@ -452,16 +452,7 @@ const deltesEmptyFieldAfterMove = {
 };
 
 const deltesConditionalEmptyFieldAfterMove = {
-    transformObject: {
-        searchProducts: {
-            moveFields: [{
-                from: "results.product.fields",
-                fields: ["sku", "id"],
-                to: "moved"
-            }]
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             results: {
                 product: {
@@ -473,7 +464,16 @@ const deltesConditionalEmptyFieldAfterMove = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            moveFields: [{
+                from: "results.product.fields",
+                fields: ["sku", "id"],
+                to: "moved"
+            }]
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             moved: {
                 id: {},
@@ -484,14 +484,7 @@ const deltesConditionalEmptyFieldAfterMove = {
 };
 
 const addsArgs = {
-    transformObject: {
-        searchProducts: {
-            args: {
-                text: "shorts"
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             results: {
                 id: {},
@@ -499,7 +492,14 @@ const addsArgs = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            args: {
+                text: "shorts"
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             __args: {
                 text: "shorts"
@@ -513,14 +513,7 @@ const addsArgs = {
 };
 
 const mergeArgs = {
-    transformObject: {
-        searchProducts: {
-            args: {
-                limit: 20
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             __args: {
                 text: "meskwielt"
@@ -531,7 +524,14 @@ const mergeArgs = {
             }
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            args: {
+                limit: 20
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             __args: {
                 text: "meskwielt",
@@ -546,14 +546,7 @@ const mergeArgs = {
 };
 
 const removesEmptyObjectAfterIgnore = {
-    transformObject: {
-        searchProducts: {
-            ignore1: {
-                ignore: ["id"]
-            }
-        }
-    },
-    actualObject: {
+    initialRequest: {
         searchProducts: {
             ignore1: {
                 id: {}
@@ -561,7 +554,14 @@ const removesEmptyObjectAfterIgnore = {
             field2: {}
         }
     },
-    expectedObject: {
+    transformRules: {
+        searchProducts: {
+            ignore1: {
+                ignore: ["id"]
+            }
+        }
+    },
+    transformedRequest: {
         searchProducts: {
             field2: {}
         }
@@ -570,7 +570,17 @@ const removesEmptyObjectAfterIgnore = {
 
 
 const inlineFragments = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                id: {},
+                variants: {
+                    id: {}
+                }
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 inlineFragments: [
@@ -582,17 +592,7 @@ const inlineFragments = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                id: {},
-                variants: {
-                    id: {}
-                }
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 id: {},
@@ -608,7 +608,28 @@ const inlineFragments = {
 };
 
 const allTransforms = {
-    transformObject: {
+    initialRequest: {
+        searchProducts: {
+            results: {
+                sku: {},
+                variants: {
+                    id: {},
+                    attributes: {
+                        id: {}
+                    }
+                },
+                masterVariantId: {},
+                nonCustomField: {
+                    __aliasFor: "customField"
+                },
+                anotherField: {
+                    heySanta: {},
+                    whatever: {}
+                }
+            }
+        }
+    },
+    transformRules: {
         searchProducts: {
             results: {
                 args: {
@@ -631,28 +652,7 @@ const allTransforms = {
             }
         }
     },
-    actualObject: {
-        searchProducts: {
-            results: {
-                sku: {},
-                variants: {
-                    id: {},
-                    attributes: {
-                        id: {}
-                    }
-                },
-                masterVariantId: {},
-                nonCustomField: {
-                    __aliasFor: "customField"
-                },
-                anotherField: {
-                    heySanta: {},
-                    whatever: {}
-                }
-            }
-        }
-    },
-    expectedObject: {
+    transformedRequest: {
         searchProducts: {
             results: {
                 __args: {
@@ -674,9 +674,9 @@ const allTransforms = {
                 anotherField: {
                     heySanta: {},
                     __aliasFor: "AnotherField",
-                    __cifName: null
+                    __initialAlias: null
                 },
-                __cifName: null
+                __initialAlias: null
             }
         }
     }

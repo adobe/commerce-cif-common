@@ -15,36 +15,36 @@
 'use strict';
 
 /**
- * The ObjectMapper takes a filterAndMapper object as an argument and passes the root fields
- * of the original request to the rootField handler function of the object.
+ * The ResponseMapper takes an object with mapper functions and delegates
+ * the own properties of an object to the corresponding mapper function.
  */
-class ObjectMapper {
+class ResponseMapper {
 
     /**
      * 
-     * @param { object } filterAndMapper 
+     * @param { object } mappers 
      */
-    constructor(filterAndMapper) {
-        this.filterAndMapper = filterAndMapper;
+    constructor(mappers) {
+        this.mappers = mappers;
     }
 
     /**
      * This function is responsible for delegating the rootFields to the right mapper
      * 
-     * @param {object} originalObject   the original graphQL source in object format
-     * @param {object} dataObject       the result object from which to extract the data
+     * @param {object} originalRequest   the original graphQL request in object format
+     * @param {object} dataObject        object from which to extract the data
      * 
-     * @return {object}                 original query with data filled in as defined in filterAndMapper object
+     * @return {object}                  object with requested data
      */
-    map(originalObject, dataObject) {
+    map(originalRequest, dataObject) {
         let result = {};
-        Object.keys(originalObject).map(key => {
-            let field = originalObject[key].__aliasFor || key;
+        Object.keys(originalRequest).map(key => {
+            let field = originalRequest[key].__aliasFor || key;
             //don't pass originalObject[key] directly since it could need data from another rootfield
-            result[key] = this.filterAndMapper[field](originalObject, dataObject, key);
+            result[key] = this.mappers[field](originalRequest, dataObject, key);
         });
         return result;
     }
 }
 
-module.exports = ObjectMapper;
+module.exports = ResponseMapper;
