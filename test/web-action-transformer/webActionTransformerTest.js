@@ -226,7 +226,7 @@ describe('webActionTransformer', () => {
                     httpResponse.error = {'name': errorName, 'cause': {'message': 'error'}};
                     transformerAction.transform(httpResponse, {});
                     assert.strictEqual(httpResponse.statusCode, errorNameToStatusCodeMap[errorName]);
-                    let body = JSON.parse(new Buffer(httpResponse.body, 'base64'));
+                    let body = JSON.parse(Buffer.from(httpResponse.body, 'base64'));
                     assert.equal(body.reason, 'error');
                     if (errorName === 'SomethingThatIsNotMapped') {
                         assert.isTrue(body.message.startsWith('UnexpectedError'));
@@ -273,6 +273,19 @@ describe('webActionTransformer', () => {
                 const expectedExpires = new Date(Date.now() + 111000).getTime();
                 const actualExpires = Date.parse(httpResponse.headers['Expires']);
                 assert.isTrue(Math.abs(actualExpires - expectedExpires) < 1000);
+            });
+
+            it('sets vary header when there is non set from a previous action', () => {
+                const httpResponse = new HttpResponse({});
+                transformAction.transform(httpResponse, {});
+                assert.strictEqual(httpResponse.headers['Vary'], 'Accept-Language');
+            });
+
+            it('copies the vary header from a previous action', () => {
+                const httpResponse = new HttpResponse({});
+                const fromOw = {'vary': 'I am here'};
+                transformAction.transform(httpResponse, fromOw);
+                assert.strictEqual(httpResponse.headers['Vary'], 'I am here');
             });
 
             it('http status code NOT FOUND', () => {

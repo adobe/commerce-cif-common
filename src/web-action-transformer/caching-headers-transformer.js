@@ -35,6 +35,13 @@ class CachingHeadersTransformerPipelineAction extends ITransformerPipelineAction
                     httpResponse.headers['Expires'] =
                         new Date(Date.now() + resultFromOwSequence.cachetime * 1000).toUTCString();
                 }
+
+                if (resultFromOwSequence.vary) {
+                    httpResponse.headers['Vary'] = resultFromOwSequence.vary;
+                } else {
+                    httpResponse.headers['Vary'] = 'Accept-Language';
+                }
+
                 break;
             }
             case HttpStatusCodes.NOT_FOUND: {
