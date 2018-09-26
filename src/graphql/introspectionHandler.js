@@ -22,14 +22,15 @@ const validateAndParseQuery = require('./utils').validateAndParseQuery;
 const schema = makeExecutableSchema({ typeDefs: graphqlSchema });
 
 /**
- * This action handles IntroSpection Queries and GraphQL Syntax Errors for the CIF GrahphQL Endpoint
- * and delegates the rest of the GraphQL requests to a custom Endpoint
- * @param   {GraphQLQuery}   args.query      //entering GraphQL query
- * @param   {ClientBase}     client          //custom client requires _handleSuccess and _handleError functions
+ * This action handles IntroSpection Queries and GraphQL Syntax Errors for GrahphQL
+ * and delegates the rest of the GraphQL requests to the passed dataQueryHandler
+ * @param   {object}   args      
+ * @param   {Source}   args.query        //entering GraphQL query
+ * @param   {Function} dataQueryHandler  //handles data query
  * @return  {Promise.<ExecutionResult>}
  */
-function cifEndpoint(args, customEndpoint) {
-    let query = args.query || "";
+function introspectionHandler(args, dataQueryHandler) {
+    let query = args.query;
     // DocumentNode of query or encountered errors
     let document = validateAndParseQuery(schema, query);
 
@@ -53,8 +54,8 @@ function cifEndpoint(args, customEndpoint) {
                 return args;
             });
     } else {
-        return customEndpoint(args);
+        return dataQueryHandler(args);
     }
 }
 
-module.exports.main = cifEndpoint;
+module.exports.main = introspectionHandler;

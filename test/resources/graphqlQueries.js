@@ -14,7 +14,8 @@
 
 'use strict';
 
-const introSpectionQuery = `query IntrospectionQuery {
+const introspectionQuery = `
+  query IntrospectionQuery {
     __schema {
       queryType { name }
       mutationType { name }
@@ -106,17 +107,19 @@ const introSpectionQuery = `query IntrospectionQuery {
     }
   }`;
 
-let syntaxError = `{
-    searchProducts(text: "meskwielt"){
-        total
-}`;
+let syntaxError = `
+  {
+      searchProducts(text: "meskwielt"){
+          total
+  }`;
 
-let invalidField = `{
-    searchProducts(text: "meskwielt"){
-        results {
-            unicorn
-        }
-    }
-}`;
+let invalidField = `
+  {
+      searchProducts(text: "meskwielt"){
+          results {
+              unicorn
+          }
+      }
+  }`;
 
-module.exports = { invalidField, syntaxError, introSpectionQuery }
+module.exports = { invalidField, syntaxError, introspectionQuery }

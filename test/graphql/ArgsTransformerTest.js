@@ -16,19 +16,35 @@
 
 const chai = require('chai');
 const assert = chai.assert;
-const ArgsHandler = require('../../src/graphql/ArgsHandler');
+const ArgsTransformer = require('../../src/graphql/ArgsTransformer');
 
-describe('ArgHandler', () => {
-    let handler;
+describe('ArgsTransformer', () => {
 
-    const argsFunctions = require('../resources/argsResources').argsFunctions;
-    const obligatoryArgs = require('../resources/argsResources').obligatoryArgs;
+    let argsTransforms = {
+        offset: (args) => {
+            let defaultOffset = 0;
+            if (!args.offset || args.offset < 0) {
+                args.offset = defaultOffset;
+            }
+        },
+        limit: (args) => {
+            let defaultLimit = 10;
+            if (args.limit && args.limit < 0) {
+                args.limit = defaultLimit;
+            }
+        },
+        currentPage: (args) => {
+            args.currentPage = args.offset;
+        }
+    };
+    
+    let checkFields = {
+        searchProducts: ['offset', 'currentPage']
+    };
+    
+    let transformer = new ArgsTransformer(argsTransforms, checkFields, '_args');
 
-    before(() => {
-        handler = new ArgsHandler(argsFunctions, obligatoryArgs, '_args');
-    });
-
-    it('handles arguments as defined and doesn\'t modify the rest', () => {
+    it("transforms arguments as defined and doesn't modify the rest", () => {
         let limit = -12;
         let offset = 12;
         let obj = {
@@ -39,25 +55,25 @@ describe('ArgHandler', () => {
                     offset: offset
                 }
             }
-        }
+        };
 
         let expectedArgs = {
             text: "meskwielt",
             limit: limit,
             offset: offset
-        }
+        };
 
-        argsFunctions.limit(expectedArgs);
-        argsFunctions.offset(expectedArgs);
+        argsTransforms.limit(expectedArgs);
+        argsTransforms.offset(expectedArgs);
 
-        handler.handle(obj.search, '');
+        transformer.transform(obj.search);
         assert.hasAllKeys(obj.search, '_args');
         assert.hasAllKeys(obj.search._args, expectedArgs);
         let args = obj.search._args;
         assert.deepEqual(args, expectedArgs);
     });
 
-    it('handles arguments of entire object', () => {
+    it('transforms arguments of entire object', () => {
         let offset = -2;
 
         let obj = {
@@ -68,15 +84,16 @@ describe('ArgHandler', () => {
                     }
                 },
             }
-        }
+        };
 
         let expectedArgs = {
             offset: offset
-        }
+        };
 
-        argsFunctions.offset(expectedArgs);
+        argsTransforms.offset(expectedArgs);
 
-        handler.handleWholeObject(obj, '');
+        transformer.transformRecursive(obj);
+
         assert.hasAllKeys(obj, 'result');
         assert.hasAllKeys(obj.result, 'somethingElse');
         assert.hasAllKeys(obj.result.somethingElse, '_args');
@@ -85,20 +102,21 @@ describe('ArgHandler', () => {
         assert.deepEqual(args, expectedArgs);
     });
 
-    it('checks all obligatory Args for obligatory Fields and still handles the rest of the present args', () => {
+    it('checks all obligatory Args for obligatory Fields and still transforms the rest of the present args', () => {
         let obj = {
             _args: {
-                limit: -23,
+                offset: -23,
+                limit: -23
             }
-        }
+        };
 
         let expectedArgs = {
             limit: 10,
             offset: 0,
             currentPage: 0
-        }
+        };
 
-        handler.handle(obj, 'searchProducts');
+        transformer.transform(obj, 'searchProducts');
         assert.hasAllKeys(obj._args, expectedArgs);
         assert.deepEqual(obj._args, expectedArgs);
     });

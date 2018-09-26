@@ -14,14 +14,14 @@
 
 'use strict';
 
-let simpleAlias = { 
+let simpleAlias = {
     query: `{
-                dogs {
-                    dogsName: name
-                    age
-                }
-            }`,
-    object: {
+        dogs {
+            dogsName: name
+            age
+        }
+    }`,
+    expectedObject: {
         dogs: {
             dogsName: {
                 __aliasFor: "name"
@@ -33,14 +33,14 @@ let simpleAlias = {
 
 let variousRootFieldAlias = {
     query: `{
-                dogNames: dogs {
-                    name
-                }
-                dogAges: dogs {
-                    age
-                }
-            }`,
-    object: {
+        dogNames: dogs {
+            name
+        }
+        dogAges: dogs {
+            age
+        }
+    }`,
+    expectedObject: {
         dogNames: {
             __aliasFor: "dogs",
             name: {},
@@ -52,13 +52,13 @@ let variousRootFieldAlias = {
     }
 };
 
-let rootFieldArgs =  {
+let rootFieldArgs = {
     query: `{
-                search(text: "dogs") {
-                    name
-                }
-            }`,
-    object: {
+        search(text: "dogs") {
+            name
+        }
+    }`,
+    expectedObject: {
         search: {
             __args: {
                 text: "dogs"
@@ -70,12 +70,12 @@ let rootFieldArgs =  {
 
 let fieldArgs = {
     query: `{
-                dogs {
-                    name(format: "capitalLetters")
-                    age
-                }
-            }`,
-    object: {
+        dogs {
+            name(format: "capitalLetters")
+            age
+        }
+    }`,
+    expectedObject: {
         dogs: {
             name: {
                 __args: {
@@ -87,13 +87,13 @@ let fieldArgs = {
     }
 };
 
-let nestedArgs = { 
+let nestedArgs = {
     query: `{
-                search(filter: {animal: "dog"}){
-                    name
-                }
-            }`,
-    object: {
+        search(filter: {animal: "dog"}){
+            name
+        }
+    }`,
+    expectedObject: {
         search: {
             __args: {
                 filter: {
@@ -107,11 +107,11 @@ let nestedArgs = {
 
 let arrayArgs = {
     query: `{
-                search(filter: ["dogs", "cats"]){
-                    name
-                }
-            }`,
-    object: {
+        search(filter: ["dogs", "cats"]){
+            name
+        }
+    }`,
+    expectedObject: {
         search: {
             __args: {
                 filter: ["dogs", "cats"]
@@ -121,4 +121,80 @@ let arrayArgs = {
     }
 };
 
-module.exports = { simpleAlias, variousRootFieldAlias, rootFieldArgs, fieldArgs, nestedArgs, arrayArgs };
+let inlineFrags = {
+    query: `{
+        search{
+            ... on ConfigSearch {
+                id
+            },
+            label
+        }
+    }`,
+    expectedObject: {
+        search: {
+            __on: [{
+                __fragmentName: "ConfigSearch",
+                id: {}
+            }],
+            label: {}
+        }
+    }
+};
+
+let mergeRecursive = {
+    obj1: {
+        search: {
+            overwrite: "toOverwrite",
+            __aliasFor: "textSearch",
+            something1: {
+                subSomething1: {}
+            }
+        }
+    },
+    obj2: {
+        search: {
+            overwrite: "overwritten",
+            __doNotMerge: "shouldn't be merged",
+            something1: {
+                subSomething2: {}
+            },
+            otherField: {}
+        }
+    },
+    expectedObject: {
+        search: {
+            overwrite: "overwritten",
+            __aliasFor: "textSearch",
+            something1: {
+                subSomething1: {},
+                subSomething2: {}
+            },
+            otherField: {}
+        }
+    }
+};
+
+let backToGraphql = {
+    object: {
+        rootField: {
+            __args: {
+                arg1: "firstArgument",
+                arg2: "secondArgument"
+            },
+            field1: {},
+            nestedField: {
+                field2: {
+                    __aliasFor: "inNestedObject"
+                }
+            }
+        }
+    },
+    expectedQuery: '{ rootField (arg1: "firstArgument", arg2: "secondArgument") { field1 nestedField { field2: inNestedObject } } }'
+};
+
+module.exports =
+    {
+        simpleAlias, variousRootFieldAlias,
+        rootFieldArgs, fieldArgs, nestedArgs, arrayArgs,
+        inlineFrags, mergeRecursive, backToGraphql
+    };

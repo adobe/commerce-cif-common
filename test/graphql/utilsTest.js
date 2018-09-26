@@ -16,15 +16,18 @@
 
 const { parse } = require('../../src/graphql/node_modules/graphql');
 const { makeExecutableSchema } = require('../../src/graphql/node_modules/graphql-tools');
-const { gqlToObject, validateAndParseQuery } = require('../../src/graphql/utils');
+const { gqlToObject, validateAndParseQuery, makeGraphqlQuery, recursiveMerge } = require('../../src/graphql/utils');
 const chai = require('chai');
 chai.use(require('chai-string'));
 const assert = chai.assert;
-  
+
 describe('GraphQL utilities', () => {
 
-   const { gqlQuery, typeDefs } = require('../resources/utilsResources');
-   const { simpleAlias, variousRootFieldAlias, rootFieldArgs, fieldArgs, nestedArgs, arrayArgs } = require('../resources/AliasAndArgsQueries');
+    const { gqlQuery, typeDefs } = require('../resources/utilsResources');
+    const {
+        simpleAlias, variousRootFieldAlias,
+        rootFieldArgs, fieldArgs, nestedArgs, arrayArgs,
+        inlineFrags, mergeRecursive, backToGraphql } = require('../resources/AliasAndArgsQueries');
 
     describe('Unit Tests', () => {
 
@@ -53,38 +56,55 @@ describe('GraphQL utilities', () => {
 
         it('handles simple alias correctly', () => {
             let actualObject = gqlToObject(parse(simpleAlias.query).definitions[0]);
-            assert.hasAllDeepKeys(actualObject, simpleAlias.object);
-            assert.deepEqual(actualObject, simpleAlias.object);
+            assert.hasAllDeepKeys(actualObject, simpleAlias.expectedObject);
+            assert.deepEqual(actualObject, simpleAlias.expectedObject);
         });
 
         it('supports various aliases for same field correctly', () => {
             let actualObject = gqlToObject(parse(variousRootFieldAlias.query).definitions[0]);
-            assert.hasAllDeepKeys(actualObject, variousRootFieldAlias.object);
-            assert.deepEqual(actualObject, variousRootFieldAlias.object);
+            assert.hasAllDeepKeys(actualObject, variousRootFieldAlias.expectedObject);
+            assert.deepEqual(actualObject, variousRootFieldAlias.expectedObject);
         });
 
         it('parses root field args correctly', () => {
             let actualObject = gqlToObject(parse(rootFieldArgs.query).definitions[0]);
-            assert.hasAllDeepKeys(actualObject, rootFieldArgs.object);
-            assert.deepEqual(actualObject, rootFieldArgs.object);
+            assert.hasAllDeepKeys(actualObject, rootFieldArgs.expectedObject);
+            assert.deepEqual(actualObject, rootFieldArgs.expectedObject);
         });
 
         it('parses simple field args correctly', () => {
             let actualObject = gqlToObject(parse(fieldArgs.query).definitions[0]);
-            assert.hasAllDeepKeys(actualObject, fieldArgs.object);
-            assert.deepEqual(actualObject, fieldArgs.object);
+            assert.hasAllDeepKeys(actualObject, fieldArgs.expectedObject);
+            assert.deepEqual(actualObject, fieldArgs.expectedObject);
         });
 
         it('parses nested args correctly', () => {
             let actualObject = gqlToObject(parse(nestedArgs.query).definitions[0]);
-            assert.hasAllDeepKeys(actualObject, nestedArgs.object);
-            assert.deepEqual(actualObject, nestedArgs.object);
+            assert.hasAllDeepKeys(actualObject, nestedArgs.expectedObject);
+            assert.deepEqual(actualObject, nestedArgs.expectedObject);
         });
 
         it('parses array args correctly', () => {
             let actualObject = gqlToObject(parse(arrayArgs.query).definitions[0]);
-            assert.hasAllDeepKeys(actualObject, arrayArgs.object);
-            assert.deepEqual(actualObject, arrayArgs.object);
+            assert.hasAllDeepKeys(actualObject, arrayArgs.expectedObject);
+            assert.deepEqual(actualObject, arrayArgs.expectedObject);
+        });
+
+        it('parses inline fragments correctly', () => {
+            let actualObject = gqlToObject(parse(inlineFrags.query).definitions[0]);
+            assert.hasAllDeepKeys(actualObject, inlineFrags.expectedObject);
+            assert.deepEqual(actualObject, inlineFrags.expectedObject);
+        });
+
+        it('merges objects recursively', () => {
+            let actualObject = recursiveMerge(mergeRecursive.obj1, mergeRecursive.obj2);
+            assert.hasAllDeepKeys(actualObject, mergeRecursive.expectedObject);
+            assert.deepEqual(actualObject, mergeRecursive.expectedObject);
+        });
+
+        it('transforms object back to gql format', () => {
+            let resultString = makeGraphqlQuery(backToGraphql.object);
+            assert.equal(resultString, backToGraphql.expectedQuery);
         });
     });
 });
