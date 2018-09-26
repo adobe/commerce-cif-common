@@ -48,7 +48,7 @@ describe('web action transformer integration tests', function() {
                 assert.isDefined(response.headers['Perf-Ow-Seq-In-']);
                 assert.isDefined(response.headers['Perf-Ow-Seq-End-12345']);
                 assert.isDefined(response.body);
-            })
+            });
         });
 
         it('web action transformer error', function() {
@@ -58,8 +58,15 @@ describe('web action transformer integration tests', function() {
                 assert.strictEqual(response.statusCode, 404);
                 assert.strictEqual(response.headers['Cache-Control'], 'no-cache, no-store, no-transform, must-revalidate');
                 assert.isDefined(response.body);
-            })
+            });
         });
 
+        it('sets the Vary header', () => {
+            const actionName = `${env.actionPrefix}/main`;
+            const params = sampleCommerceServiceSuccess;
+            return ow.actions.invoke({actionName, blocking, result, params}).then(response => {
+                assert.strictEqual(response.headers['Vary'], 'Accept-Language');
+            });
+        });
     });
 });
