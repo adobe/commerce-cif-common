@@ -275,7 +275,7 @@ describe('webActionTransformer', () => {
                 assert.isTrue(Math.abs(actualExpires - expectedExpires) < 1000);
             });
 
-            it('sets vary header when there is non set from a previous action', () => {
+            it('sets vary header when there is none set from a previous action', () => {
                 const httpResponse = new HttpResponse({});
                 transformAction.transform(httpResponse, {});
                 assert.strictEqual(httpResponse.headers['Vary'], 'Accept-Language');
