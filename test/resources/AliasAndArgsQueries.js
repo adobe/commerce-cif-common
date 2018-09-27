@@ -184,7 +184,8 @@ let backToGraphql = {
             field1: {},
             nestedField: {
                 field2: {
-                    __aliasFor: "inNestedObject"
+                    __aliasFor: "inNestedObject",
+                    __initialAlias: "ignoreMe"
                 }
             }
         }
@@ -192,9 +193,5 @@ let backToGraphql = {
     expectedQuery: '{ rootField (arg1: "firstArgument", arg2: "secondArgument") { field1 nestedField { field2: inNestedObject } } }'
 };
 
-module.exports =
-    {
-        simpleAlias, variousRootFieldAlias,
-        rootFieldArgs, fieldArgs, nestedArgs, arrayArgs,
-        inlineFrags, mergeRecursive, backToGraphql
-    };
+module.exports.sameTestObjects = { simpleAlias, variousRootFieldAlias, rootFieldArgs, fieldArgs, nestedArgs, arrayArgs, inlineFrags };
+module.exports.differentTestObjects = { mergeRecursive, backToGraphql };

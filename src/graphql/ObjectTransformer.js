@@ -19,8 +19,8 @@ const recursiveMerge = require('./utils').recursiveMerge;
 /**
  * An ObjectTransformer transforms objects according to their transform rules:
  * 
- * adders on objects will add all the fields in adder.add if adder.for is present (to the object itself or subObjects)
- * (it will add all the fields in adder.add in anycase if adder.for is not specified)
+ * adders on objects will add all the fields in adder.add if adder.when is present (to the object itself or subObjects)
+ * (it will add all the fields in adder.add in anycase if adder.when is not specified)
  * 
  * ignore on objects will remove all the ignore fields if present (of the object itself)
  * 
@@ -31,7 +31,7 @@ const recursiveMerge = require('./utils').recursiveMerge;
  * 
  * args on objects will add the args fields to the '__args' property of the object
  * 
- * inlineFragments adds inline fragments to the object if any of the inline fragment field are present
+ * inlineFragments adds inline fragments to the object if any of the inline fragment field is present
  */
 class ObjectTransformer {
 
@@ -100,8 +100,8 @@ class ObjectTransformer {
      * 
      * @param {object} object 
      * @param {object[]} inlineFrags
-     * @param {string} inlineFrags[].fragmentName   name of the inlineFragment
-     * @param {string[]} inlineFrags[].fields       fields that belong into the inline fragment
+     * @param {string} inlineFrags[].typeName      name of the inline fragment type
+     * @param {string[]} inlineFrags[].fields      fields that belong into the inline fragment
      */
     addInlineFragments(object, inlineFrags) {
         object.__on = [];
@@ -116,7 +116,7 @@ class ObjectTransformer {
                     }];
                     this.moveFields(object, moveFields);
                     object.__on.push(
-                        Object.assign({ __fragmentName: inf.fragmentName }, object.tempInFrag)
+                        Object.assign({ __typeName: inf.typeName }, object.tempInFrag)
                     );
                     delete object.tempInFrag;
                     return; //to next inlineFragment
@@ -130,16 +130,16 @@ class ObjectTransformer {
 
     /**
      * for each adder:
-     * adds all the fields in the 'add' array to the object if any of 'for' is present or completely omitted
+     * adds all the fields in the 'add' array to the object if any of 'when' is present or completely omitted
      * 
      * @param {object} object                       object in which to add fields
      * @param {object[]} adders                     array with all the specified adders for the object
-     * @param {string | string[]} [adders[].for]    check for presece of fields
-     * @param {string | string[]} adders[].add      add fields if any for field is present
+     * @param {string | string[]} [adders[].when]   check for presence of fields
+     * @param {string | string[]} adders[].add      add fields if any when field is present
      */
     addFields(object, adders) {
         adders.forEach(adder => {
-            let forFields = Array.isArray(adder.for) ? adder.for : [adder.for];
+            let forFields = Array.isArray(adder.when) ? adder.when : [adder.when];
             for (let forField of forFields) { // for loop because cannot break out of forEach
                 if (this.addFunction(forField, adder.add, object)) {
                     return; //straight to next adder

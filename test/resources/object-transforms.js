@@ -7,7 +7,7 @@
  *
  *    Unless required by applicable law or agreed to in writing, software distributed under
  *    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
- *    OF ANY KIND, either express or implied. See the License for the specific language
+ *    OF ANY KIND, either express or implied. See the License when the specific language
  *    governing permissions and limitations under the License.
  *
  ******************************************************************************/
@@ -127,7 +127,7 @@ const addSameLevelField = {
         searchProducts: {
             results: {
                 adders: [{
-                    for: "masterVariantId",
+                    when: "masterVariantId",
                     add: ["sku"]
                 }]
             }
@@ -157,7 +157,7 @@ const addFromSublevel = {
         searchProducts: {
             results: {
                 adders: [{
-                    for: "masterVariant.id",
+                    when: "masterVariant.id",
                     add: ["sku"]
                 }]
             }
@@ -187,7 +187,7 @@ const addToSublevel = {
         searchProducts: {
             results: {
                 adders: [{
-                    for: "masterVariantId",
+                    when: "masterVariantId",
                     add: ["masterVariant.id"]
                 }]
             }
@@ -217,7 +217,7 @@ const addMultipleFields = {
         searchProducts: {
             results: {
                 adders: [{
-                    for: "masterVariantId",
+                    when: "masterVariantId",
                     add: ["sku", "masterVariant.id"]
                 }]
             }
@@ -250,11 +250,11 @@ const multipleAdders = {
             results: {
                 adders: [
                     {
-                        for: "masterVariantId",
+                        when: "masterVariantId",
                         add: ["sku", "masterVariant.id"]
                     },
                     {
-                        for: "SpongeBob",
+                        when: "SpongeBob",
                         add: ["Patrick"]
                     }
                 ]
@@ -288,7 +288,7 @@ const ignoresNotPresentAdders = {
         searchProducts: {
             results: {
                 adders: [{
-                    for: "masterVariantId",
+                    when: "masterVariantId",
                     add: ["sku"]
                 }]
             }
@@ -423,7 +423,7 @@ const moveWithoutFrom = {
     }
 };
 
-const deltesEmptyFieldAfterMove = {
+const deletesEmptyFieldAfterMove = {
     initialRequest: {
         searchProducts: {
             results: {
@@ -545,30 +545,6 @@ const mergeArgs = {
     }
 };
 
-const removesEmptyObjectAfterIgnore = {
-    initialRequest: {
-        searchProducts: {
-            ignore1: {
-                id: {}
-            },
-            field2: {}
-        }
-    },
-    transformRules: {
-        searchProducts: {
-            ignore1: {
-                ignore: ["id"]
-            }
-        }
-    },
-    transformedRequest: {
-        searchProducts: {
-            field2: {}
-        }
-    }
-};
-
-
 const inlineFragments = {
     initialRequest: {
         searchProducts: {
@@ -585,7 +561,7 @@ const inlineFragments = {
             results: {
                 inlineFragments: [
                     {
-                        fragmentName: "configurableResult",
+                        typeName: "configurableResult",
                         fields: ["variants"]
                     }
                 ]
@@ -597,7 +573,7 @@ const inlineFragments = {
             results: {
                 id: {},
                 __on: [{
-                    __fragmentName: "configurableResult",
+                    __typeName: "configurableResult",
                     variants: {
                         id: {}
                     }
@@ -642,7 +618,7 @@ const allTransforms = {
                 ignore: ["customField", "masterVariantId"],
                 alias: "items",
                 adders: [{
-                    for: "masterVariantId",
+                    when: "masterVariantId",
                     add: ["masterVariant", "masterVariant.id"]
                 }],
                 anotherField: {
@@ -684,9 +660,9 @@ const allTransforms = {
 
 module.exports = {
     aliasField, aliasFieldAlias,
-    ignoreFields, deleteEmptyObject, deleteConditionalEmptyObject, removesEmptyObjectAfterIgnore,
+    ignoreFields, deleteEmptyObject, deleteConditionalEmptyObject,
     addSameLevelField, addFromSublevel, addToSublevel, addMultipleFields, multipleAdders, ignoresNotPresentAdders,
-    moveAllFields, moveSelectedField, moveWithoutFrom, deltesEmptyFieldAfterMove, deltesConditionalEmptyFieldAfterMove,
+    moveAllFields, moveSelectedField, moveWithoutFrom, deletesEmptyFieldAfterMove, deltesConditionalEmptyFieldAfterMove,
     addsArgs, mergeArgs,
     inlineFragments, allTransforms
 }

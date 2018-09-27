@@ -69,25 +69,25 @@ function _parseArguments(args) {
 }
 
 /**
- * merges obj2 with obj1:
- * adds or overwrites all the keys from obj2 to obj1 recursively
+ * merges 'from' object with 'to' object:
+ * adds or overwrites all the keys from from to to recursively
  * 
- * @param {object} obj1 
- * @param {object} obj2 
+ * @param {object} to 
+ * @param {object} from 
  */
-function recursiveMerge(obj1, obj2) {
-    if(obj2) {
-        Object.keys(obj2).forEach(key => {
-            if (typeof obj2[key] === 'object') {
-                obj1[key] = obj1[key] ? recursiveMerge(obj1[key], obj2[key]) : obj2[key];
+function recursiveMerge(to, from) {
+    if (from) {
+        Object.keys(from).forEach(key => {
+            if (typeof from[key] === 'object') {
+                to[key] = to[key] ? recursiveMerge(to[key], from[key]) : from[key];
             } else {
-                if(!key.startsWith('__')) {
-                    obj1[key] = obj2[key]; //overwrite
+                if (!key.startsWith('__')) {
+                    to[key] = from[key]; //overwrite
                 }
             }
         });
     }
-    return obj1;
+    return to;
 }
 
 /**
@@ -118,7 +118,7 @@ function validateAndParseQuery(schema, source) {
  * @return {string}        graphql query
  */
 function makeGraphqlQuery(object) {
-    let query = jsonToQuery(object, { ignoreFields: ['__cifName'] });
+    let query = jsonToQuery(object, { ignoreFields: ['__initialAlias'] });
     return "{ " + query + " }";
 }
 
