@@ -451,7 +451,7 @@ const deletesEmptyFieldAfterMove = {
     }
 };
 
-const deltesConditionalEmptyFieldAfterMove = {
+const deletesConditionalEmptyFieldAfterMove = {
     initialRequest: {
         searchProducts: {
             results: {
@@ -662,7 +662,7 @@ module.exports = {
     aliasField, aliasFieldAlias,
     ignoreFields, deleteEmptyObject, deleteConditionalEmptyObject,
     addSameLevelField, addFromSublevel, addToSublevel, addMultipleFields, multipleAdders, ignoresNotPresentAdders,
-    moveAllFields, moveSelectedField, moveWithoutFrom, deletesEmptyFieldAfterMove, deltesConditionalEmptyFieldAfterMove,
+    moveAllFields, moveSelectedField, moveWithoutFrom, deletesEmptyFieldAfterMove, deletesConditionalEmptyFieldAfterMove,
     addsArgs, mergeArgs,
     inlineFragments, allTransforms
 }
