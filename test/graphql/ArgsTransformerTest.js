@@ -20,7 +20,7 @@ const ArgsTransformer = require('../../src/graphql/ArgsTransformer');
 
 describe('ArgsTransformer', () => {
 
-    let argsTransforms = {
+    let transformerFunctions = {
         offset: (args) => {
             let defaultOffset = 0;
             if (!args.offset || args.offset < 0) {
@@ -42,7 +42,7 @@ describe('ArgsTransformer', () => {
         searchProducts: ['offset', 'currentPage']
     };
     
-    let transformer = new ArgsTransformer(argsTransforms, checkFields, '_args');
+    let transformer = new ArgsTransformer(transformerFunctions, checkFields, '_args');
 
     it("transforms arguments as defined and doesn't modify the rest", () => {
         let limit = -12;
@@ -63,8 +63,8 @@ describe('ArgsTransformer', () => {
             offset: offset
         };
 
-        argsTransforms.limit(expectedArgs);
-        argsTransforms.offset(expectedArgs);
+        transformerFunctions.limit(expectedArgs);
+        transformerFunctions.offset(expectedArgs);
 
         transformer.transform(obj.search);
         assert.hasAllKeys(obj.search, '_args');
@@ -90,7 +90,7 @@ describe('ArgsTransformer', () => {
             offset: offset
         };
 
-        argsTransforms.offset(expectedArgs);
+        transformerFunctions.offset(expectedArgs);
 
         transformer.transformRecursive(obj);
 

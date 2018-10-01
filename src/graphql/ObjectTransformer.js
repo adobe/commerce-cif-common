@@ -17,27 +17,30 @@
 const recursiveMerge = require('./utils').recursiveMerge;
 
 /**
- * An ObjectTransformer transforms objects according to their transform rules:
+ * This class transforms a Javascript representation of a GraphQL query based on a set of transformation rules.
+ * The following rules are currently supported:
+ * * adders: an array of 'adder' rules, where each 'adder' defines the 'adder.add' array of fields that will be added if the
+ * 'adder.when' field is present (of the object itself or its sub-objects, depending how it is defined). If 'adder.when' is missing,
+ * all the 'adder.add' fields will be added.
  * 
- * adders on objects will add all the fields in adder.add if adder.when is present (to the object itself or subObjects)
- * (it will add all the fields in adder.add in anycase if adder.when is not specified)
+ * * removers: an array of fields that will be removed from the query. When a field is removed, its parent object will also
+ * be removed if it becomes empty because of the removal operation. 
  * 
- * ignore on objects will remove all the ignore fields if present (of the object itself)
+ * * movers: an array of 'mover' rules, when each 'mover' defines the 'mover.from' root location from where the 'mover.fields' should be moved,
+ * and the 'mover.to' location where fields should be moved. If 'mover.fields' is not specified, allfields are moved. If 'mover.from' is not
+ * specified, the entire object (where the mover is defined) is moved.
  * 
- * moveFields on objects will move all the mover.fields (or all the present fields if mover.fileds is not specified)
- * from mover.from (or from the object itself if mover.from is not specified) to the mover.to field
+ * * alias: specifies the GraphQL alias that should be used when requesting a field.
  * 
- * alias on objects will set the property '__aliasFor' of this object equal to it's value
+ * * args: defines an array of arguments that should be added to a field when transforming the query.
  * 
- * args on objects will add the args fields to the '__args' property of the object
- * 
- * inlineFragments adds inline fragments to the object if any of the inline fragment field is present
+ * * inlineFragments: adds inline fragments to the object if any of the inline fragment field is present.
  */
 class ObjectTransformer {
 
     /**
      * 
-     * @param {object} transformRules     object represantation of graphql schema containing the transforms
+     * @param {object} transformRules     object representation of graphql schema containing the transforms
      */
     constructor(transformRules) {
         this.transformRules = transformRules || {};
@@ -78,11 +81,11 @@ class ObjectTransformer {
             args = Object.assign(args, transforms.args)
             toTransform.__args = args;
         }
-        if (transforms.ignore) {
-            this.ignoreFields(toTransform, transforms.ignore);
+        if (transforms.removers) {
+            this.removeFields(toTransform, transforms.removers);
         }
-        if (transforms.moveFields) {
-            this.moveFields(toTransform, transforms.moveFields);
+        if (transforms.movers) {
+            this.moveFields(toTransform, transforms.movers);
         }
         if (transforms.alias) {
             toTransform.__initialAlias = toTransform.__aliasFor || null;
@@ -219,7 +222,7 @@ class ObjectTransformer {
      * @param {object}             object
      * @param {string|string[]}    ignore   fields to be ignored
      */
-    ignoreFields(object, ignore) {
+    removeFields(object, ignore) {
         let ignoreFields = Array.isArray(ignore) ? ignore : [ignore];
         ignoreFields.forEach(toIgnore => {
             let field = this.includesField(object, toIgnore);

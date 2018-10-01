@@ -22,11 +22,12 @@ const validateAndParseQuery = require('./utils').validateAndParseQuery;
 const schema = makeExecutableSchema({ typeDefs: graphqlSchema });
 
 /**
- * This action handles Introspection Queries and GraphQL Syntax Errors for GraphQL
- * and delegates the rest of the GraphQL requests to the passed dataQueryHandler
- * @param   {object}   args      
- * @param   {Source}   args.query        //entering GraphQL query
- * @param   {Function} dataQueryHandler  //handles data query
+ * This action handles CIF introspection queries and the validation of the queries based on the CIF GraphQL schema.
+ * For data queries, it delegates the processing to the given dataQueryHandler.
+ * 
+ * @param   {object}   args              The arguments object from the Openwhisk action invocation.
+ * @param   {Source}   args.query        The args object must contain the JSON 'query' of the GraphQL request.
+ * @param   {Function} dataQueryHandler  A function that will process GraphQL data queries. It will be called with the 'args' argument.
  * @return  {Promise.<ExecutionResult>}
  */
 function introspectionHandler(args, dataQueryHandler) {

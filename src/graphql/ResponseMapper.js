@@ -15,26 +15,27 @@
 'use strict';
 
 /**
- * The ResponseMapper takes an object with mapper functions and delegates
- * the own properties of an object to the corresponding mapper function.
+ * Transforms the response of a transformed GraphQL request into a response that will match the
+ * data requested in the original request.
  */
 class ResponseMapper {
 
     /**
-     * 
-     * @param { object } mappers 
+     * @param { object } mappers The mapper functions used to transform the response
      */
     constructor(mappers) {
         this.mappers = mappers;
     }
 
     /**
-     * This function is responsible for delegating the rootFields to the right mapper
+     * For each root field of the original GraphQL request, this function will call (if any) the 
+     * mapper function that will transform the dataObject into a response that matches the data requested
+     * in the original request.
      * 
-     * @param {object} originalRequest   the original graphQL request in object format
-     * @param {object} dataObject        object from which to extract the data
+     * @param {object} originalRequest   The original graphQL request in Javascript object format
+     * @param {object} dataObject        The object response from which to extract the data
      * 
-     * @return {object}                  object with requested data
+     * @return {object}                  The tranformed response that will match the original request
      */
     map(originalRequest, dataObject) {
         let result = {};

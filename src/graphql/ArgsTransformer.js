@@ -22,28 +22,29 @@
 class ArgsTransformer {
 
     /**
-     * @param {object}    transformRules           of form {argument name: handler function}
+     * @param {object}    transformerFunctions     of form {argument name: handler function}
      * @param {object}    [checkArgsOnFields]      of form {field name, [check arguments]} for those fields,
      *                                             the arguments in the array will be called in any case
      * @param {string}    [argsPropertyName = '__args'] name of the arguments property ('__args' by default)
      * 
      */
-    constructor(transformRules, checkArgsOnFields = {}, argsPropertyName = '__args') {
-        this.arguments = transformRules;
+    constructor(transformerFunctions, checkArgsOnFields = {}, argsPropertyName = '__args') {
+        this.transformerFunctions = transformerFunctions;
         this.fields = checkArgsOnFields;
         this.args = argsPropertyName;
     }
 
     /**
-     * Transforms arguments as defined in the argsFunctions object
+     * Transforms the arguments of the Javascript representation of a GraphQL query based on the transformerFunctions
+     * defined when creating the ArgsTransformer.
      * 
-     * @param {object} obj          object of which to transform the arguments
+     * @param {object} obj          The object for which the arguments should be transformed
      * @param {string} [objName]    name of the object (root), in case of checkArgsOnFields
      */
     transform(obj, objName = '') {
         let args = obj[this.args] ? JSON.parse(JSON.stringify(obj[this.args])) : {};      //check if the object has an arguments property               
         Object.keys(args).forEach(a => {
-            let f = this.arguments[a];              //transform argument if declared
+            let f = this.transformerFunctions[a]; // Transform argument if there is a transformer function with that name
             if (f) {
                 f(args);
             }
@@ -52,7 +53,7 @@ class ArgsTransformer {
             this.fields[objName].forEach(a => {
                 // only execute if not already treated
                 if (!obj[this.args][a]) {
-                    this.arguments[a](args);
+                    this.transformerFunctions[a](args);
                 }
             });
         }
@@ -62,9 +63,10 @@ class ArgsTransformer {
     }
 
     /**
-     * Transforms arguments of object and its sub properties as well
+     * Recursively transforms the arguments of the Javascript representation of a GraphQL query based on the transformerFunctions
+     * defined when creating the ArgsTransformer.
      * 
-     * @param {object} obj      to transform recursively
+     * @param {object} obj      The object for which the arguments should be transformed
      * @param {string} objName  name of the object (root), in case of checkArgsOnFields 
      */
     transformRecursive(obj, objName = '') {

@@ -64,7 +64,7 @@ const ignoreFields = {
     },
     transformRules: {
         searchProducts: {
-            ignore: ["total"]
+            removers: ["total"]
         }
     },
     transformedRequest: {
@@ -86,7 +86,7 @@ const deleteEmptyObject = {
     transformRules: {
         searchProducts: {
             results: {
-                ignore: ["sku"]
+                removers: ["sku"]
             }
         }
     },
@@ -108,7 +108,7 @@ const deleteConditionalEmptyObject = {
     transformRules: {
         searchProducts: {
             results: {
-                ignore: ["sku"]
+                removers: ["sku"]
             }
         }
     },
@@ -320,7 +320,7 @@ const moveAllFields = {
     transformRules: {
         searchProducts: {
             results: {
-                moveFields: [{
+                movers: [{
                     from: "variants",
                     to: "variants.variantsName"
                 }]
@@ -361,7 +361,7 @@ const moveSelectedField = {
     transformRules: {
         searchProducts: {
             results: {
-                moveFields: [{
+                movers: [{
                     from: 'variants',
                     fields: ["sku", "id"],
                     to: "moved"
@@ -401,7 +401,7 @@ const moveWithoutFrom = {
     transformRules: {
         searchProducts: {
             results: {
-                moveFields: [{
+                movers: [{
                     fields: ["sku", "id"],
                     to: "moved"
                 }]
@@ -434,7 +434,7 @@ const deletesEmptyFieldAfterMove = {
     },
     transformRules: {
         searchProducts: {
-            moveFields: [{
+            movers: [{
                 from: "results",
                 fields: ["sku", "id"],
                 to: "moved"
@@ -466,7 +466,7 @@ const deletesConditionalEmptyFieldAfterMove = {
     },
     transformRules: {
         searchProducts: {
-            moveFields: [{
+            movers: [{
                 from: "results.product.fields",
                 fields: ["sku", "id"],
                 to: "moved"
@@ -611,18 +611,18 @@ const allTransforms = {
                 args: {
                     text: "argsText"
                 },
-                moveFields: [{
+                movers: [{
                     from: "variants",
                     to: "variantsPlace.variantsName"
                 }],
-                ignore: ["customField", "masterVariantId"],
+                removers: ["customField", "masterVariantId"],
                 alias: "items",
                 adders: [{
                     when: "masterVariantId",
                     add: ["masterVariant", "masterVariant.id"]
                 }],
                 anotherField: {
-                    ignore: ["whatever"],
+                    removers: ["whatever"],
                     alias: "AnotherField",
                 }
             }
