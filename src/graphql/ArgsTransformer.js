@@ -15,9 +15,7 @@
 'use strict';
 
 /**
- * Used for transforming arguments of one GraphQL schema into another.
- * 
- * The ArgsTransformer class transforms arguments of all objects as defined in the transformRules.
+ * This class transforms the arguments of one GraphQL schema into another based on a set of transformer functions.
  */
 class ArgsTransformer {
 
