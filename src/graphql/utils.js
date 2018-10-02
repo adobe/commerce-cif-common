@@ -19,7 +19,7 @@ const { validate } = require('graphql/validation');
 const jsonToQuery = require('json-to-graphql-query').jsonToGraphQLQuery;
 
 /**
- * Transforms an AST into a javascript object
+ * Transforms an AST (Abstract Syntax Tree = a parsed GrqphQL query) into an equivalent javascript object
  * 
  * @param {DefinitionNode} node         DefinitionNode of parsed GraphQL source
  * 

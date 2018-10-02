@@ -20,7 +20,7 @@ const assert = chai.assert;
 
 const { invalidField, syntaxError, introspectionQuery } = require('../resources/graphqlQueries');
 
-const graphqlBase = require('../../src/graphql/introspectionHandler').main;
+const introspectionHandler = require('../../src/graphql/introspectionHandler');
 
 const customEndpoint = () => {
     return Promise.resolve("reached custom endpoint");
@@ -31,7 +31,7 @@ describe('CIF common graphql base', () => {
     describe('Unit Tests', () => {
 
         it('performs schema introspection', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query: introspectionQuery,
             }, null)
                 .then(result => {
@@ -42,7 +42,7 @@ describe('CIF common graphql base', () => {
         });
 
         it('includes ow-activation-id in debug mode', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query: introspectionQuery,
                 DEBUG: true
             }, null)
@@ -55,7 +55,7 @@ describe('CIF common graphql base', () => {
         });
 
         it('returns an error body for syntax errors', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query: syntaxError
             }, null)
                 .then(result => {
@@ -67,7 +67,7 @@ describe('CIF common graphql base', () => {
         });
 
         it('returns an error body for invalid fields', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query: invalidField
             }, null).then(result => {
                 assert.isDefined(result.response.body.errors);
@@ -78,7 +78,7 @@ describe('CIF common graphql base', () => {
         });
 
         it('returns errors and errorType when variables in not an object', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query: introspectionQuery,
                 variables: "asd"
             }, null)
@@ -90,7 +90,7 @@ describe('CIF common graphql base', () => {
         });
 
         it('includes ow-activation-id for error in debug mode', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query: introspectionQuery,
                 variables: "asd",
                 DEBUG: true
@@ -104,7 +104,7 @@ describe('CIF common graphql base', () => {
         });
 
         it('delegates validated data queries to custom graphqlBase', () => {
-            return graphqlBase({
+            return introspectionHandler({
                 query:
                     ` { searchProducts { total } }`
             }, customEndpoint)

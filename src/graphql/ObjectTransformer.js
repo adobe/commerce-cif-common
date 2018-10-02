@@ -39,15 +39,14 @@ const recursiveMerge = require('./utils').recursiveMerge;
 class ObjectTransformer {
 
     /**
-     * 
-     * @param {object} transformRules     object representation of graphql schema containing the transforms
+     * @param {object} transformRules     Object representation of graphql schema containing the transformation rules.
      */
     constructor(transformRules) {
         this.transformRules = transformRules || {};
     }
 
     /**
-     * transforms/modifies the toTransform object according to the transformRules
+     * Transforms/modifies the toTransform object according to the transformRules
      * 
      * 1. adders
      * 2. transforms on subobjects
@@ -58,20 +57,26 @@ class ObjectTransformer {
      * 7. inlineFragments
      * 
      * @param {object} toTransform         object to be transformed
-     * @param {object} transformRules      object with all the relevant transforms for the current object
      * 
      * @returns {boolean} indicating if the object results in an empty object (should never be the case for main query)
      */
-    transform(toTransform, transformRules) {
+    transform(toTransform) {
+        this._transform(toTransform, this.transformRules);
+    }
+
+    /**
+     * @private 
+     */
+    _transform(toTransform, transformRules) {
         let transforms = transformRules || this.transformRules;
 
         if (transforms.adders) {
-            this.addFields(toTransform, transforms.adders);
+            this._addFields(toTransform, transforms.adders);
         }
 
         Object.keys(toTransform).forEach(key => {
             let field = toTransform[key].__aliasFor || key;
-            if (transforms[field] && this.transform(toTransform[key], transforms[field])) {
+            if (transforms[field] && this._transform(toTransform[key], transforms[field])) {
                 delete toTransform[field];
             }
         });
@@ -82,42 +87,44 @@ class ObjectTransformer {
             toTransform.__args = args;
         }
         if (transforms.removers) {
-            this.removeFields(toTransform, transforms.removers);
+            this._removeFields(toTransform, transforms.removers);
         }
         if (transforms.movers) {
-            this.moveFields(toTransform, transforms.movers);
+            this._moveFields(toTransform, transforms.movers);
         }
         if (transforms.alias) {
             toTransform.__initialAlias = toTransform.__aliasFor || null;
             toTransform.__aliasFor = transforms.alias;
         }
         if (transforms.inlineFragments) {
-            this.addInlineFragments(toTransform, transforms.inlineFragments);
+            this._addInlineFragments(toTransform, transforms.inlineFragments);
         }
 
         return Object.keys(toTransform).length === 0;
     }
 
     /**
-     * adds inlineFragments to the object
+     * @private
+     * 
+     * Adds inlineFragments to the object
      * 
      * @param {object} object 
      * @param {object[]} inlineFrags
      * @param {string} inlineFrags[].typeName      name of the inline fragment type
      * @param {string[]} inlineFrags[].fields      fields that belong into the inline fragment
      */
-    addInlineFragments(object, inlineFrags) {
+    _addInlineFragments(object, inlineFrags) {
         object.__on = [];
         inlineFrags.forEach(inf => {
             // for loop because one cannot break out of forEach
             for (let fieldName of inf.fields) {
-                let field = this.includesField(object, fieldName)
+                let field = this._includesField(object, fieldName)
                 if (field) {
                     let moveFields = [{
                         fields: inf.fields,
                         to: "tempInFrag"
                     }];
-                    this.moveFields(object, moveFields);
+                    this._moveFields(object, moveFields);
                     object.__on.push(
                         Object.assign({ __typeName: inf.typeName }, object.tempInFrag)
                     );
@@ -132,7 +139,9 @@ class ObjectTransformer {
     }
 
     /**
-     * for each adder:
+     * @private
+     * 
+     * For each adder:
      * adds all the fields in the 'add' array to the object if any of 'when' is present or completely omitted
      * 
      * @param {object} object                       object in which to add fields
@@ -140,11 +149,11 @@ class ObjectTransformer {
      * @param {string | string[]} [adders[].when]   check for presence of fields
      * @param {string | string[]} adders[].add      add fields if any when field is present
      */
-    addFields(object, adders) {
+    _addFields(object, adders) {
         adders.forEach(adder => {
             let forFields = Array.isArray(adder.when) ? adder.when : [adder.when];
             for (let forField of forFields) { // for loop because cannot break out of forEach
-                if (this.addFunction(forField, adder.add, object)) {
+                if (this._addFunction(forField, adder.add, object)) {
                     return; //straight to next adder
                 }
             }
@@ -152,6 +161,7 @@ class ObjectTransformer {
     }
 
     /**
+     * @private
      * 
      * @param {string | undefined} forField     check for presence of this field
      * @param {string | string[]}  add          possibly add this fields
@@ -159,15 +169,15 @@ class ObjectTransformer {
      * 
      * @returns {boolean}                       indicating whether something was added or not
      */
-    addFunction(forField, add, object) {
+    _addFunction(forField, add, object) {
         let pathFor = forField ? forField.split('.') : [];
         //check subfields recursively
-        let fieldObj = this.checkAndGetSubField(object, pathFor);
+        let fieldObj = this._checkAndGetSubField(object, pathFor);
         if (fieldObj) {
             let adders = Array.isArray(add) ? add : [add];
             adders.forEach(toAdd => {
                 let path = toAdd.split('.');
-                this.addField(object, path);
+                this._addField(object, path);
             });
             return true;
         }
@@ -175,6 +185,8 @@ class ObjectTransformer {
     }
 
     /**
+     * @private
+     * 
      * adds path to the obj
      * 
      * @param {object} object
@@ -182,16 +194,18 @@ class ObjectTransformer {
      * 
      * @returns {object}        leaf object of path
      */
-    addField(object, path) {
+    _addField(object, path) {
         if (path.length > 0) {
             //ignore the fact that this overwrites a field with alias of another fieldname
             object[path[0]] = object[path[0]] || {};
-            return this.addField(object[path.shift()], path);
+            return this._addField(object[path.shift()], path);
         }
         return object;
     }
 
     /**
+     * @private
+     * 
      * checks if the path exists in object
      * 
      * @param {object} object
@@ -200,14 +214,14 @@ class ObjectTransformer {
      * 
      * @returns {object|undefined}    leaf field if found
      */
-    checkAndGetSubField(object, path, del = false) {
+    _checkAndGetSubField(object, path, del = false) {
         if (path.length === 0) {
             return object;
         }
-        let field = this.includesField(object, path[0]);
+        let field = this._includesField(object, path[0]);
         if (field && path.length > 1) {
             path.shift();
-            return this.checkAndGetSubField(object[field], path);
+            return this._checkAndGetSubField(object[field], path);
         }
         let fieldObject = field ? object[field] : undefined;
         if (del && field) {
@@ -217,15 +231,17 @@ class ObjectTransformer {
     }
 
     /**
+     * @private
+     * 
      * ignores all the specified fields
      * 
      * @param {object}             object
      * @param {string|string[]}    ignore   fields to be ignored
      */
-    removeFields(object, ignore) {
+    _removeFields(object, ignore) {
         let ignoreFields = Array.isArray(ignore) ? ignore : [ignore];
         ignoreFields.forEach(toIgnore => {
-            let field = this.includesField(object, toIgnore);
+            let field = this._includesField(object, toIgnore);
             if (field) {
                 delete object[field];
             }
@@ -233,14 +249,15 @@ class ObjectTransformer {
     }
 
     /**
-     * 
      * @private
      */
-    checkAllNames(initialAlias, ctAlias, fieldName) {
+    _checkAllNames(initialAlias, ctAlias, fieldName) {
         return (!initialAlias && !ctAlias || initialAlias === null || !initialAlias && ctAlias === fieldName);
     }
 
     /**
+     * @private
+     * 
      * checks if the object has has the fieldName property or an alias to it
      * 
      * @param {object} object
@@ -248,9 +265,9 @@ class ObjectTransformer {
      * 
      * @returns {string|undefined} name of the fieldName property if present
      */
-    includesField(object, fieldName) {
+    _includesField(object, fieldName) {
         //shortCut for non-alias fields
-        if (object[fieldName] && this.checkAllNames(object[fieldName].__initialAlias, object[fieldName].__aliasFor, fieldName)) {
+        if (object[fieldName] && this._checkAllNames(object[fieldName].__initialAlias, object[fieldName].__aliasFor, fieldName)) {
             return fieldName;
         }
         //cannot use forEach because cannot break out of it
@@ -266,6 +283,8 @@ class ObjectTransformer {
     }
 
     /**
+     * @private
+     * 
      * moves fields from one field to another
      * 
      * @param {object} object               object in which to move fields around
@@ -274,44 +293,46 @@ class ObjectTransformer {
      * @param {string[]} [movers[].fields]  which fields to be moved (all fields if omitted)
      * @param {string} movers[].to          path to which the fields should be moved to
      */
-    moveFields(object, movers) {
+    _moveFields(object, movers) {
         movers.forEach(mover => {
             let pathFor = mover.from ? mover.from.split('.') : [];
-            let fieldObj = this.checkAndGetSubField(object, pathFor.slice(0), !mover.fields);
+            let fieldObj = this._checkAndGetSubField(object, pathFor.slice(0), !mover.fields);
             if (fieldObj) {
                 let path = mover.to ? mover.to.split('.') : [];
                 if (mover.fields) {
                     let mergefield = {};
                     mover.fields.forEach(field => {
-                        let key = this.includesField(fieldObj, field);
+                        let key = this._includesField(fieldObj, field);
                         if (key) {
                             mergefield[key] = fieldObj[key];
                             delete fieldObj[key];
                         }
                     });
                     if (Object.keys(mergefield).length === 0) return; //goes to next mover
-                    if (ObjectTransformer.emptyField(fieldObj)) {
-                        this.removeEmptyFields(object, pathFor);
+                    if (ObjectTransformer._emptyField(fieldObj)) {
+                        this._removeEmptyFields(object, pathFor);
                     }
-                    this.addAndMerge(object, path, mergefield);
+                    this._addAndMerge(object, path, mergefield);
                 } else {
                     let copySubField = {};
                     
                     recursiveMerge(copySubField, fieldObj); //copy all field except for '__' fields
                     // don't worry about object being empty because you add a path
                     Object.keys(copySubField).map(key => {delete fieldObj[key]});
-                    this.addAndMerge(object, path, copySubField);
+                    this._addAndMerge(object, path, copySubField);
                 }
             }
         });
     }
 
      /**
+      * @private
+      * 
      * checks if the field is empty (ignores all the fields starting with __)
      * 
      * @param {object} object 
      */
-    static emptyField(object) {
+    static _emptyField(object) {
         if (Object.keys(object).length === 0) {
             return true;
         } else {
@@ -326,28 +347,32 @@ class ObjectTransformer {
     }
 
     /**
+     * @private
+     * 
      * removes all empty fields in the path from the object
      * 
      * @param {object} object 
      * @param {string[]} path 
      */
-    removeEmptyFields(object, path) {
+    _removeEmptyFields(object, path) {
         if (path.length === 0) {
             return;
         } else {
-            let field = this.includesField(object, path[0]);
+            let field = this._includesField(object, path[0]);
             let subObj = field ? object[field] : {};
             if (field && path.length > 1) {
                 path.shift()
-                this.removeEmptyFields(subObj, path);
+                this._removeEmptyFields(subObj, path);
             }
-            if (field && ObjectTransformer.emptyField(subObj)) {
+            if (field && ObjectTransformer._emptyField(subObj)) {
                 delete object[field];
             }
         }
     }
 
     /**
+     * @private
+     * 
      * adds the path to obj and merges the leaf field with the mergeWith object
      * 
      * @param {object}      obj 
@@ -356,8 +381,8 @@ class ObjectTransformer {
      * 
      * @returns {object}    merged object
      */
-    addAndMerge(obj, path, mergeWith) {
-        let mergeObject = this.addField(obj, path);
+    _addAndMerge(obj, path, mergeWith) {
+        let mergeObject = this._addField(obj, path);
         mergeObject = recursiveMerge(mergeObject, mergeWith);
         return mergeObject;
     }

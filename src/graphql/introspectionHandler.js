@@ -59,4 +59,4 @@ function introspectionHandler(args, dataQueryHandler) {
     }
 }
 
-module.exports.main = introspectionHandler;
+module.exports = introspectionHandler;
