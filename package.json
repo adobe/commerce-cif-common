@@ -24,7 +24,8 @@
     "nyc": {
         "include": [
             "src/web-action-transformer",
-            "src/shared"
+            "src/shared",
+            "src/graphql"
         ],
         "exclude": [
             "src/web-action-transformer/webpack.config.js"
