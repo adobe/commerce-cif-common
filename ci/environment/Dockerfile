@@ -16,7 +16,7 @@ FROM circleci/openjdk:8-jdk-node
 
 LABEL maintainer="Adobe"
 
-ENV SONAR_SCANNER_VERSION=3.0.3.778-linux
+ENV SONAR_SCANNER_VERSION=3.2.0.1227-linux
 
 WORKDIR /home/circleci
 
@@ -30,7 +30,7 @@ RUN mkdir bin && \
 
 # Install sonar scanner
 RUN cd bin && \
-    wget -nv https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    wget -nv https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
     unzip -q sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
     rm sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
     mv sonar-scanner-${SONAR_SCANNER_VERSION} sonar-scanner && \
