@@ -12,7 +12,7 @@
 #
 ################################################################################
 
-FROM circleci/openjdk:8u151-jdk
+FROM circleci/openjdk:8-jdk-node
 
 LABEL maintainer="Adobe"
 
@@ -23,30 +23,9 @@ LABEL maintainer="Adobe"
 
 # node installations command expect to run as root
 USER root
-## Using node installation from https://raw.githubusercontent.com/nodejs/docker-node/6b8d86d6ad59e0d1e7a94cec2e909cad137a028f/8/Dockerfile
-
-RUN groupadd --gid 1000 node \
-  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
-
-# gpg keys listed at https://github.com/nodejs/node#release-team
-RUN set -ex \
-  && for key in \
-    94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    FD3A5288F042B6850C66B31F09FE44734EB7990E \
-    71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
-    DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-    C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-    B9AE9905FFD7803F25714661B63B535A4C206CA9 \
-    56730D5401028683275BD23C23EFEFE93C4CFFFE \
-    77984A986EBC2AA786BC0F66B01FBB92821C587A \
-  ; do \
-    gpg --keyserver pgp.mit.edu --recv-keys "$key" || \
-    gpg --keyserver keyserver.pgp.com --recv-keys "$key" || \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key" ; \
-  done
 
 # Use 10.15.0 LTS version
-ENV NODE_VERSION 10.15.0
+ENV NODE_VERSION=10.15.0
 
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -64,16 +43,16 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && grep " node-v$NODE_VERSION-linux-$ARCH.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xJf "node-v$NODE_VERSION-linux-$ARCH.tar.xz" -C /usr/local --strip-components=1 --no-same-owner \
   && rm "node-v$NODE_VERSION-linux-$ARCH.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-  && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+  && ln -sf /usr/local/bin/node /usr/local/bin/nodejs
 
 # Basic smoke test
 RUN node --version
 
+# Switch back to CircleCI user
 USER circleci
+WORKDIR /home/circleci
 
 ENV SONAR_SCANNER_VERSION=3.2.0.1227-linux
-
-WORKDIR /home/circleci
 
 # Install wsk
 RUN mkdir bin && \
