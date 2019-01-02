@@ -9,7 +9,7 @@
         "url": "https://github.com/adobe/commerce-cif-common.git"
     },
     "engines": {
-        "node": ">= 0.8.0"
+        "node": ">= 10.15.0"
     },
     "devDependencies": {
         "lerna": "^3.4.2",

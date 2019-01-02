@@ -15,7 +15,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: adobe/commerce-cif-ci-env:ci-v0.0.2
+      - image: adobe/commerce-cif-ci-env:ci-v0.1.0
     steps:
       - checkout
       - run:
@@ -30,7 +30,7 @@ jobs:
 
   release:
     docker:
-      - image: adobe/commerce-cif-ci-env:ci-v0.0.2
+      - image: adobe/commerce-cif-ci-env:ci-v0.1.0
     steps:
       - checkout
       - run:
