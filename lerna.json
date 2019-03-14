@@ -2,7 +2,6 @@
     "packages": [
         "src/shared",
         "src/web-action-transformer",
-        "src/graphql",
         "test"
     ],
     "version": "0.0.0"
