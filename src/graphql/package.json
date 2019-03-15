@@ -1,7 +1,7 @@
 {
   "name": "@adobe/commerce-cif-graphql",
   "version": "1.0.0",
-  "description": "Adobe Commerce Integration Framework (CIF) GraphQL Project",
+  "description": "Adobe Commerce Integration Framework (CIF REST) GraphQL Project",
   "main": "introspectionHandler.js",
   "author": "Adobe Systems Inc.",
   "license": "Apache-2.0",
