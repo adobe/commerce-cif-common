@@ -4,7 +4,7 @@
 [![npm (scoped)](https://img.shields.io/npm/v/@adobe/commerce-cif-web-action-transformer.svg?label=npm%20web-action-transformer)](https://www.npmjs.com/package/@adobe/commerce-cif-web-action-transformer)
 
 # Commerce Integration Framework - common module for all implementations
-CIF Common module implementation contains the common actions that will be used by customers 
+CIF REST Common module implementation contains the common actions that will be used by customers 
 to sequence their actions and common code useful for any implementation.   
 
 Currently one action is implemented: `src/web-action-transformer`.
@@ -25,7 +25,7 @@ For testing, each package is configured to perform a static code analysis using 
 To run linting, tests and coverage analysis, run `npm test` in the root folder.
 
 ## Deployment
-Deployment instructions are available in the repository specific to each CIF integration.
+Deployment instructions are available in the repository specific to each CIF REST integration.
 
 ### Contributing
 
