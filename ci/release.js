@@ -21,8 +21,7 @@ const ci = new CI();
 // Modules in this repository
 const releaseableModules = {
     'commerce-cif-common': 'src/shared',
-    'commerce-cif-web-action-transformer': 'src/web-action-transformer',
-    'commerce-cif-graphql': 'src/graphql',
+    'commerce-cif-web-action-transformer': 'src/web-action-transformer'
 }
 
 ci.context();
